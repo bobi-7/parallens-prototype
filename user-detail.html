@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>用户画像 · Parallens 运营后台</title>
+<style>
+/* ============================================================
+   Parallens 用户运营后台 · Demo 设计系统
+   美学方向：Field Station（野外工作站）—— 墨绿黑侧边栏 + 暖米白内容区
+   观鸟线=森林绿 / 狩猎线=琥珀棕 / 双线中性
+   技术红线：file:// 直开、零依赖、系统字体栈
+   ============================================================ */
+
+:root {
+  /* 色板 */
+  --bg: #f4f2ec;              /* 内容区米白 */
+  --bg-deep: #edeae2;
+  --panel: #ffffff;
+  --sidebar: #182a22;         /* 墨绿黑 */
+  --sidebar-deep: #122019;
+  --sidebar-text: #a8b8ae;
+  --sidebar-active: #ffffff;
+
+  /* 品牌双色 */
+  --bird: #2d6a4f;            /* 观鸟 森林绿 */
+  --bird-soft: #e3eee7;
+  --hunt: #a8621a;            /* 狩猎 琥珀棕 */
+  --hunt-soft: #f6e9d7;
+
+  /* 语义 */
+  --ink: #23201a;             /* 主文本暖黑 */
+  --ink-2: #57524a;           /* 次文本 */
+  --ink-3: #8a857c;           /* 弱文本 */
+  --line: #e2dfd6;            /* 边框 */
+  --line-soft: #edeae2;
+
+  /* 状态 */
+  --ok: #2d6a4f;
+  --warn: #b45309;
+  --danger: #b3261e;
+  --info: #3a5f8a;
+
+  --radius: 10px;
+  --radius-sm: 7px;
+  --shadow: 0 1px 2px rgba(35,32,26,.05), 0 4px 16px rgba(35,32,26,.06);
+  --shadow-lg: 0 4px 12px rgba(35,32,26,.10), 0 16px 48px rgba(35,32,26,.12);
+
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
+  --mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font);
+  font-size: 13.5px;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============ 布局骨架 ============ */
+.layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 232px; flex-shrink: 0;
+  background: linear-gradient(180deg, var(--sidebar) 0%, var(--sidebar-deep) 100%);
+  color: var(--sidebar-text);
+  display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+
+.sidebar-brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+
+.brand-mark {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--bird), var(--hunt));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+
+.brand-name { color: #f2f5f1; font-size: 14.5px; font-weight: 700; letter-spacing: .2px; }
+.brand-sub { font-size: 10.5px; color: rgba(255,255,255,.45); margin-top: 1px; }
+
+.nav-group { padding: 14px 10px 6px; font-size: 10.5px; letter-spacing: .12em; color: rgba(255,255,255,.35); font-weight: 600; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; margin: 1px 8px;
+  border-radius: 8px; cursor: pointer;
+  font-size: 13px; color: var(--sidebar-text);
+  text-decoration: none; transition: background .15s, color .15s;
+}
+.nav-item:hover { background: rgba(255,255,255,.06); color: #d6e0d8; }
+.nav-item.active { background: rgba(255,255,255,.10); color: var(--sidebar-active); font-weight: 600; }
+.nav-item.v2 { opacity: .45; cursor: not-allowed; }
+.nav-item.v2:hover { background: transparent; color: var(--sidebar-text); }
+.nav-item .badge-v2 { margin-left: auto; font-size: 9.5px; color: rgba(255,255,255,.4); border: 1px solid rgba(255,255,255,.18); border-radius: 4px; padding: 0 4px; }
+.nav-icon { width: 18px; text-align: center; font-size: 14px; }
+
+.sidebar-foot {
+  margin-top: auto; padding: 14px 18px;
+  font-size: 10.5px; color: rgba(255,255,255,.3);
+  border-top: 1px solid rgba(255,255,255,.07);
+  line-height: 1.7;
+}
+
+/* 主区 */
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.topbar {
+  height: 56px; background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 20px; position: sticky; top: 0; z-index: 40;
+  box-shadow: 0 1px 0 rgba(35,32,26,.03);
+}
+
+.page-title { font-size: 15.5px; font-weight: 700; margin-right: auto; white-space: nowrap; }
+.page-title .prd-ref { font-size: 10.5px; color: var(--ink-3); font-weight: 400; margin-left: 8px; }
+
+.content { padding: 22px 24px 48px; max-width: 1440px; width: 100%; margin: 0 auto; }
+
+/* ============ 顶部切换器 ============ */
+.seg {
+  display: inline-flex; background: var(--bg-deep);
+  border: 1px solid var(--line); border-radius: 9px; padding: 3px; gap: 2px;
+}
+.seg button {
+  border: 0; background: transparent; cursor: pointer;
+  font-size: 12px; padding: 5px 12px; border-radius: 7px;
+  color: var(--ink-2); font-family: var(--font); transition: all .15s;
+}
+.seg button:hover { color: var(--ink); }
+.seg button.on { background: var(--panel); color: var(--ink); font-weight: 600; box-shadow: 0 1px 3px rgba(35,32,26,.12); }
+
+/* 产品线专用分段控件 */
+.seg-pl button.on[data-pl="bird"] { background: var(--bird); color: #fff; }
+.seg-pl button.on[data-pl="hunt"] { background: var(--hunt); color: #fff; }
+
+/* 角色切换器 */
+.role-switch {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--ink-2);
+}
+.role-switch .seg button.on { background: var(--sidebar); color: #fff; }
+
+/* 演示说明按钮 */
+.demo-btn {
+  border: 1px dashed var(--ink-3); background: transparent; color: var(--ink-2);
+  font-size: 11.5px; padding: 5px 11px; border-radius: 8px; cursor: pointer;
+  font-family: var(--font); transition: all .15s;
+}
+.demo-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+/* 切换器标签 */
+.switch-label { font-size: 10.5px; color: var(--ink-3); font-weight: 600; letter-spacing: .06em; }
+
+.topbar-seg { display: flex; align-items: center; gap: 7px; }
+
+/* ============ 卡片与布局 ============ */
+.card {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+.card-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 18px; border-bottom: 1px solid var(--line-soft);
+}
+.card-head h3 { font-size: 13.5px; font-weight: 700; }
+.card-head .desc { font-size: 11.5px; color: var(--ink-3); }
+.card-body { padding: 18px; }
+
+/* ============ 筛选栏 ============ */
+.filter-bar {
+  display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 12px 16px; margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.filter-item { display: flex; align-items: center; gap: 6px; }
+.filter-item label { font-size: 11.5px; color: var(--ink-3); white-space: nowrap; }
+.filter-divider { width: 1px; height: 24px; background: var(--line); }
+
+/* ============ 表单控件 ============ */
+input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="search"], select, textarea {
+  font-family: var(--font); font-size: 12.5px; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 7px;
+  padding: 6px 10px; background: #fff; outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--ink-2); box-shadow: 0 0 0 3px rgba(35,32,26,.06); }
+select { cursor: pointer; }
+textarea { resize: vertical; line-height: 1.6; }
+
+.checkbox-line { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-2); cursor: pointer; }
+.checkbox-line input { accent-color: var(--bird); width: 14px; height: 14px; cursor: pointer; }
+
+/* ============ 按钮 ============ */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--line); background: var(--panel);
+  color: var(--ink); font-size: 12.5px; font-weight: 600;
+  padding: 7px 14px; border-radius: 8px; cursor: pointer;
+  font-family: var(--font); transition: all .15s;
+}
+.btn:hover { border-color: var(--ink-2); background: var(--bg); }
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--bird); border-color: var(--bird); color: #fff; }
+.btn-primary:hover { background: #245741; border-color: #245741; }
+.btn-hunt { background: var(--hunt); border-color: var(--hunt); color: #fff; }
+.btn-hunt:hover { background: #8f5414; border-color: #8f5414; }
+.btn-danger { background: #fff; border-color: #d8b9b6; color: var(--danger); }
+.btn-danger:hover { border-color: var(--danger); background: #fdf1f0; }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--ink-2); }
+.btn-ghost:hover { background: var(--bg); color: var(--ink); }
+.btn-sm { padding: 4px 9px; font-size: 11.5px; border-radius: 6px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ============ 表格 ============ */
+.table-wrap { overflow-x: auto; border-radius: 0 0 var(--radius) var(--radius); }
+table.table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.table th {
+  text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .05em;
+  color: var(--ink-3); text-transform: uppercase;
+  padding: 10px 14px; border-bottom: 1px solid var(--line);
+  background: var(--bg); white-space: nowrap;
+}
+.table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--line-soft);
+  color: var(--ink); vertical-align: middle;
+}
+.table tbody tr:last-child td { border-bottom: 0; }
+.table tbody tr { transition: background .12s; }
+.table tbody tr:hover { background: #faf8f3; }
+.table td.mono, .table .mono { font-family: var(--mono); font-size: 11.5px; }
+.table .num { font-variant-numeric: tabular-nums; }
+.table .empty { text-align: center; color: var(--ink-3); padding: 40px 0; font-size: 12.5px; }
+
+/* ============ 徽章 ============ */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; padding: 2.5px 9px; border-radius: 20px;
+  white-space: nowrap;
+}
+.badge::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.badge-gray { background: #f0eee8; color: #6b665d; }
+.badge-blue { background: #e6edf5; color: var(--info); }
+.badge-green { background: var(--bird-soft); color: var(--bird); }
+.badge-orange { background: var(--hunt-soft); color: var(--hunt); }
+.badge-red { background: #fbeae8; color: var(--danger); }
+.badge-pl { background: var(--bird-soft); color: var(--bird); }
+.badge-pl.hunt { background: var(--hunt-soft); color: var(--hunt); }
+.badge-pl.both { background: #e9e6df; color: #57524a; }
+
+/* 产品线标签（列表内） */
+.pl-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; padding: 1.5px 8px; border-radius: 5px; font-weight: 600;
+}
+.pl-tag.bird { background: var(--bird-soft); color: var(--bird); }
+.pl-tag.hunt { background: var(--hunt-soft); color: var(--hunt); }
+.pl-tag.both { background: #e9e6df; color: #57524a; }
+
+/* ============ 分页 ============ */
+.pager {
+  display: flex; align-items: center; gap: 6px; justify-content: flex-end;
+  padding: 10px 14px; border-top: 1px solid var(--line-soft);
+  font-size: 12px; color: var(--ink-2);
+}
+.pager .page { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 6px; cursor: pointer; border: 1px solid transparent; }
+.pager .page:hover { border-color: var(--line); }
+.pager .page.on { background: var(--bird); color: #fff; font-weight: 600; }
+
+/* ============ 步骤条 ============ */
+.steps { display: flex; align-items: center; margin: 0 0 22px; }
+.step { display: flex; align-items: center; gap: 9px; }
+.step-dot {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  background: var(--bg-deep); color: var(--ink-3); border: 1.5px solid var(--line);
+  transition: all .2s;
+}
+.step-label { font-size: 12px; color: var(--ink-3); font-weight: 600; }
+.step.on .step-dot { background: var(--bird); border-color: var(--bird); color: #fff; }
+.step.on .step-label { color: var(--ink); }
+.step.done .step-dot { background: var(--bird-soft); border-color: var(--bird); color: var(--bird); }
+.step.done .step-label { color: var(--ink-2); }
+.step-line { flex: 1; height: 1.5px; background: var(--line); margin: 0 14px; min-width: 24px; }
+.step-line.done { background: var(--bird); }
+
+/* ============ Tabs ============ */
+.tabs { display: flex; gap: 2px; border-bottom: 1.5px solid var(--line); margin-bottom: 18px; }
+.tab {
+  padding: 9px 16px; font-size: 12.5px; color: var(--ink-2); cursor: pointer;
+  border-bottom: 2.5px solid transparent; margin-bottom: -1.5px; font-weight: 600;
+  transition: color .15s;
+}
+.tab:hover { color: var(--ink); }
+.tab.on { color: var(--bird); border-bottom-color: var(--bird); }
+.tab .hint { font-size: 10px; color: var(--ink-3); font-weight: 400; margin-left: 4px; }
+
+/* ============ 弹窗 ============ */
+.modal-mask {
+  position: fixed; inset: 0; background: rgba(20,16,10,.45);
+  display: flex; align-items: center; justify-content: center; z-index: 100;
+  animation: fadeIn .15s ease-out;
+}
+.modal {
+  background: var(--panel); border-radius: 14px; box-shadow: var(--shadow-lg);
+  width: 520px; max-width: 92vw; max-height: 86vh; overflow-y: auto;
+  animation: popIn .18s cubic-bezier(.2,.9,.3,1.2);
+}
+.modal-head { padding: 16px 20px 12px; border-bottom: 1px solid var(--line-soft); font-weight: 700; font-size: 14px; display: flex; align-items: center; }
+.modal-head .close { margin-left: auto; cursor: pointer; color: var(--ink-3); font-size: 18px; background: none; border: 0; }
+.modal-body { padding: 18px 20px; }
+.modal-foot { padding: 13px 20px; border-top: 1px solid var(--line-soft); display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ============ Toast ============ */
+#toast-root { position: fixed; top: 70px; right: 20px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  background: var(--sidebar); color: #eef3ee; font-size: 12.5px;
+  padding: 11px 16px; border-radius: 9px; box-shadow: var(--shadow-lg);
+  display: flex; align-items: center; gap: 9px; animation: slideIn .25s ease-out;
+  max-width: 380px;
+}
+.toast.ok { border-left: 3px solid #4f9d77; }
+.toast.warn { border-left: 3px solid #d9933a; }
+.toast.err { border-left: 3px solid #e05c53; }
+
+/* ============ 审批面板 ============ */
+.approval-panel {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden;
+}
+.approval-panel .ap-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px; background: var(--sidebar); color: #eef3ee;
+  font-size: 12.5px; font-weight: 600;
+}
+.approval-panel .ap-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 18px; border-bottom: 1px solid var(--line-soft); font-size: 12.5px;
+}
+.approval-panel .ap-item:last-child { border-bottom: 0; }
+.ap-action { margin-left: auto; display: flex; gap: 8px; }
+
+/* ============ 编辑器分区 ============ */
+.form-section { margin-bottom: 22px; }
+.form-section > h4 {
+  font-size: 12px; font-weight: 700; letter-spacing: .04em;
+  color: var(--ink-2); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.form-section > h4::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px 18px; }
+.form-field { display: flex; flex-direction: column; gap: 5px; }
+.form-field > label { font-size: 11.5px; color: var(--ink-3); font-weight: 600; }
+.form-field .req { color: var(--danger); margin-left: 2px; }
+.form-field .help { font-size: 10.5px; color: var(--ink-3); line-height: 1.5; }
+.form-field input, .form-field select, .form-field textarea { width: 100%; }
+
+/* 多语言 Tab 小控件 */
+.lang-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+.lang-tab {
+  font-size: 11px; padding: 3px 10px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink-2); font-weight: 600;
+}
+.lang-tab.on { background: var(--sidebar); border-color: var(--sidebar); color: #fff; }
+.lang-fallback { font-size: 10.5px; color: var(--ink-3); }
+
+/* ============ 条件树（人群包编辑器） ============ */
+.cond-group {
+  border: 1.5px solid var(--line); border-radius: var(--radius);
+  margin-bottom: 12px; overflow: hidden;
+}
+.cond-group .cg-head {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg); padding: 8px 14px; font-size: 12px; font-weight: 700;
+  border-bottom: 1px solid var(--line-soft);
+}
+.cond-group .cg-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 9px; }
+.cond-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cond-row select, .cond-row input { padding: 5px 9px; }
+.cond-ops { display: flex; gap: 6px; align-items: center; font-size: 11.5px; color: var(--ink-2); }
+
+/* ============ 统计卡 ============ */
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.stat-card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.stat-card .sc-label { font-size: 11px; color: var(--ink-3); font-weight: 600; letter-spacing: .04em; }
+.stat-card .sc-value { font-size: 24px; font-weight: 800; margin-top: 6px; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.stat-card .sc-value small { font-size: 12px; font-weight: 600; color: var(--ink-3); }
+.stat-card .sc-delta { font-size: 11px; margin-top: 4px; }
+.stat-card .sc-delta.up { color: var(--ok); }
+.stat-card .sc-delta.down { color: var(--danger); }
+
+/* ============ 设备卡片（狩猎线画像） ============ */
+.device-card {
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 7px; background: #fdfcf9;
+}
+.device-card .dc-head { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 12.5px; }
+.device-card .dc-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); }
+.device-card .dc-row b { color: var(--ink); font-weight: 600; }
+
+/* ============ 渠道卡片 ============ */
+.channel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.channel-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); box-shadow: var(--shadow); overflow: hidden; }
+.channel-card .cc-head {
+  padding: 12px 16px; font-weight: 700; font-size: 13px;
+  display: flex; align-items: center; gap: 9px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.channel-card .cc-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 11px; }
+
+/* ============ 演示说明浮层 ============ */
+.demo-pop {
+  position: fixed; right: 22px; bottom: 22px; width: 340px; z-index: 150;
+  background: var(--sidebar); color: #e8eee9; border-radius: 12px;
+  box-shadow: var(--shadow-lg); padding: 16px 18px; animation: slideUp .25s ease-out;
+}
+.demo-pop h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #fff; display: flex; align-items: center; gap: 8px; }
+.demo-pop p { font-size: 11.5px; line-height: 1.75; color: #c4d1c8; margin-bottom: 6px; }
+.demo-pop .demo-close { position: absolute; top: 10px; right: 12px; color: rgba(255,255,255,.5); cursor: pointer; background: none; border: 0; font-size: 16px; }
+.demo-pop .prd-tag { display: inline-block; font-size: 10px; background: rgba(255,255,255,.12); border-radius: 4px; padding: 1px 7px; margin-bottom: 8px; color: #fff; }
+
+/* ============ 信息条 ============ */
+.notice {
+  display: flex; gap: 9px; align-items: flex-start;
+  background: #eef2ee; border: 1px solid #d5e0d8; color: var(--ink-2);
+  border-radius: 8px; padding: 10px 14px; font-size: 12px; line-height: 1.65;
+  margin-bottom: 16px;
+}
+.notice.warn { background: var(--hunt-soft); border-color: #ecd9bd; }
+.notice.red { background: #fbeae8; border-color: #e8c8c4; }
+.notice .ni { flex-shrink: 0; }
+
+/* ============ 空态 ============ */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--ink-3); }
+.empty-state .es-icon { font-size: 38px; margin-bottom: 12px; opacity: .5; }
+.empty-state p { font-size: 13px; }
+
+/* ============ 动画 ============ */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popIn { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
+@keyframes slideIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+.pulse { animation: pulse 1.6s ease-in-out infinite; }
+
+/* 页面进入动画 */
+.content { animation: fadeIn .25s ease-out; }
+
+/* ============ 滚动条 ============ */
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-thumb { background: #cfcbc2; border-radius: 5px; border: 2px solid var(--bg); }
+::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.14); border: 2px solid var(--sidebar); }
+
+/* ============ 响应式（评审主为桌面，仅兜底） ============ */
+@media (max-width: 1100px) {
+  .topbar { flex-wrap: wrap; height: auto; padding: 10px 16px; gap: 8px; }
+  .page-title { margin-right: 0; width: 100%; }
+  .content { padding: 16px; }
+}
+
+</style>
+<style>
+/* ============================================================
+   Parallens 用户运营后台 · 通用后台风格（蓝白）配色试点
+   试点范围：用户列表（users-list）+ 用户画像（user-detail）
+   实现方式：覆盖 common.css 的 CSS 变量 + 少量硬编码色
+   效果确认后再决定是否全站推广
+   ============================================================ */
+
+:root {
+  /* 色板 */
+  --bg: #f2f4f7;              /* 内容区蓝灰白 */
+  --bg-deep: #e9edf2;
+  --panel: #ffffff;
+  --sidebar: #1d2b3a;         /* 深蓝灰 */
+  --sidebar-deep: #16202c;
+  --sidebar-text: #a3b2c5;
+  --sidebar-active: #ffffff;
+
+  /* 品牌双色（通用后台以主蓝为主） */
+  --bird: #2563eb;            /* 主蓝 */
+  --bird-soft: #e8effd;
+  --hunt: #d97706;            /* 琥珀橙 */
+  --hunt-soft: #fdf0e0;
+
+  /* 语义 */
+  --ink: #1f2733;             /* 主文本冷黑 */
+  --ink-2: #4b5565;
+  --ink-3: #8a93a6;
+  --line: #e2e7ee;
+  --line-soft: #eef1f5;
+
+  /* 状态 */
+  --ok: #16a34a;
+  --warn: #d97706;
+  --danger: #dc2626;
+  --info: #2563eb;
+
+  --shadow: 0 1px 2px rgba(31,39,51,.05), 0 4px 16px rgba(31,39,51,.06);
+  --shadow-lg: 0 4px 12px rgba(31,39,51,.10), 0 16px 48px rgba(31,39,51,.12);
+}
+
+/* 硬编码色覆盖（common.css 未走变量的部分） */
+.btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+.btn-hunt:hover { background: #b45309; border-color: #b45309; }
+.table tbody tr:hover { background: #f5f7fb; }
+.badge-gray { background: #eef1f5; color: #5b6b7f; }
+.badge-pl.both, .pl-tag.both { background: #e9edf2; color: #4b5565; }
+.toast.ok { border-left-color: #22c55e; }
+.toast.warn { border-left-color: #f59e0b; }
+.toast.err { border-left-color: #ef4444; }
+::-webkit-scrollbar-thumb { background: #c3cad6; border-color: var(--bg); }
+
+</style>
+</head>
+<body>
+<script>
+/* ============================================================
+   Parallens 用户运营后台 · Demo mock 数据
+   值严格对齐背景文档 §5（套餐价格/权益量）
+   技术红线：普通全局变量，不 fetch、不 module
+   ============================================================ */
+window.PLData = {
+  version: '2026-08-07',
+
+  /* ---------- 产品线 ---------- */
+  productLines: [
+    { key: 'bird', name: '观鸟线', model: 'K3' },
+    { key: 'hunt', name: '狩猎线', model: 'TL300' },
+  ],
+
+  /* ---------- 套餐（两线全量；状态机：草稿/待上架/已上架；refPack=定向可见引用分组；schedule=上架方式） ---------- */
+  plans: {
+    bird: [
+      { id: 'BP01', name: { en: 'Free', zh: '免费版' }, tier: 'Free', price: null, annual: null, perks: ['2.3K 原彩 20 次/月', '1GB/3天存储', '永久珍藏 10 个', 'AI 管家 30 次/月', '绑定量上限 1 台'], status: '已上架', schedule: '立即' },
+      { id: 'BP02', name: { en: 'Plus', zh: 'Plus' }, tier: 'Plus', price: 4.99, annual: 49.99, perks: ['2.3K 原彩无限传输', '10GB/60天存储', '永久珍藏 100 个', 'AI 管家 300 次/月', '绑定量上限 3 台', '直播分享', '会员专属生态权益'], status: '已上架', schedule: '立即' },
+      { id: 'BP03', name: { en: 'Pro', zh: 'Pro' }, tier: 'Pro', price: 9.99, annual: 99.99, perks: ['2.3K 原彩无限传输', '20GB/90天存储', '永久珍藏 500 个', 'AI 管家 1000 次/月', '绑定量上限 10 台', '60s 长录制', '会员专属生态权益'], status: '已上架', schedule: '立即' },
+      { id: 'BP04', name: { en: 'Pro Early Bird', zh: 'Pro 早鸟优惠' }, tier: 'Pro', price: 8.99, annual: 89.99, perks: ['同 Pro 权益，黑五前早鸟价'], status: '草稿', schedule: '定时', refPack: 'P003' },
+    ],
+    hunt: [
+      { id: 'HP01', name: { en: 'Starter', zh: 'Starter' }, tier: 'Starter', price: 5.99, renewPrice: 4.99, annual: 59.99, annualSale: 49.99, perks: ['高清传输 500 个/月', 'HD 下载 5 个/月', '分享 1 位', '365 天存储'], status: '已上架', schedule: '立即' },
+      { id: 'HP02', name: { en: 'Plus', zh: 'Plus' }, tier: 'Plus', price: 9.99, renewPrice: 7.99, annual: 99.99, annualSale: 79.99, perks: ['高清传输 1200 个/月', 'HD 下载 10 个/月', '分享 3 位', '365 天存储'], status: '已上架', schedule: '立即' },
+      { id: 'HP03', name: { en: 'Pro', zh: 'Pro' }, tier: 'Pro', price: 14.99, renewPrice: 11.99, annual: 149.99, annualSale: 119.99, perks: ['高清传输无限', 'HD 下载 30 个/月', '分享 10 位', '365 天存储'], status: '已上架', schedule: '立即' },
+      /* 限定套餐（仅狩猎） */
+      { id: 'HP10', name: { en: 'Starter Discount Pack', zh: 'Starter 折扣包' }, tier: 'Starter折扣包', price: 4.99, annual: 49.99, limited: true, campaign: '黑五折扣', window: '2026-11-21 ~ 2026-12-02', perks: ['同 Starter 权益'], status: '待上架', schedule: '定时', refPack: 'P001' },
+      { id: 'HP11', name: { en: 'Plus Discount Pack', zh: 'Plus 折扣包' }, tier: 'Plus折扣包', price: 7.99, annual: 79.99, limited: true, campaign: '黑五折扣', window: '2026-11-21 ~ 2026-12-02', perks: ['同 Plus 权益'], status: '待上架', schedule: '定时' },
+      { id: 'HP12', name: { en: 'Pro Discount Pack', zh: 'Pro 折扣包' }, tier: 'Pro折扣包', price: 11.99, annual: 119.99, limited: true, campaign: '黑五折扣', window: '2026-11-21 ~ 2026-12-02', perks: ['同 Pro 权益'], status: '待上架', schedule: '定时' },
+      { id: 'HP13', name: { en: 'Seasonal Package Plus', zh: '季卡 Plus（猎人季）' }, tier: '季卡Plus', price: 29.99, duration: '6 个月', limited: true, campaign: '猎人季', window: '2026-10-15 ~ 2027-03-31', perks: ['传输 800 个/月', 'HD 下载 10 个/月', '365 天存储', '分享权限待成本核算'], status: '待上架', schedule: '定时', refPack: 'P002' },
+      { id: 'HP14', name: { en: 'Seasonal Package Pro', zh: '季卡 Pro（猎人季）' }, tier: '季卡Pro', price: 49.99, duration: '6 个月', limited: true, campaign: '猎人季', window: '2026-10-15 ~ 2027-03-31', perks: ['传输 1500 个/月', 'HD 下载 30 个/月', '365 天存储', '分享权限待成本核算'], status: '草稿', schedule: '定时' },
+    ],
+    /* 智能管家（狩猎独立 AI 权益） */
+    aiButler: { price: 3.99, annual: 29.99, desc: 'AI 智能物种推送 / 公鹿标记 / 物种排行榜 / 活跃趋势 / 热力图 / AI 问答 300 次/月' },
+    /* 加油包 */
+    booster: {
+      bird: [
+        { id: 'BB01', name: 'Extra Memory Pack', price: 2.99, unit: '/月', desc: '永久收藏 +100 格' },
+        { id: 'BB02', name: 'Extra Device Pack', price: 1.99, unit: '/月/台', desc: '超出套餐设备数后的追加设备' },
+        { id: 'BB03', name: 'AI Agent Pack', price: 3.99, unit: '/月', desc: '300 次 Agent 调用' },
+      ],
+      hunt: [
+        { id: 'HB01', name: 'HD Pack', price: 4.99, unit: '/100 张', desc: '账号内共享（非设备级）', ownership: '账号级' },
+        { id: 'HB02', name: 'AI Agent Pack', price: 3.99, unit: '/300 次', desc: '自然语言分析/搜索/建议超额补充' },
+      ],
+    },
+  },
+
+  /* ---------- 用户（20 条，含观鸟典型/狩猎典型/双机用户） ----------
+     注：sub = 观鸟账号级订阅（含 period/purchaseAt/gifts 队列赠送权益）
+         subPerDevice = 狩猎设备级套餐（一条一设备一套餐，同一 SN 可多条=多套餐生效）
+         subHistory = 历史订阅（观鸟条目 sn 为空；狩猎条目带 sn）
+         accountBenefits = 账号级共享权益（观鸟加油包 & 狩猎权益包，带 pl 区分） */
+  users: [
+    { id: 'U1001', email: 'emma.wilson@mail.com', region: '北美', pl: 'bird', createdAt: '2026-09-12', lastActive: '2026-10-08', devices: [{ sn: 'K3-B2F7A01', model: 'K3', activated: '2026-09-12', bound: true }], sub: { tier: 'Plus', trial: '试用中（7天）', autoRenew: true, expireAt: '2026-10-20', aiRemaining: 288, storageUsed: '3.2/10GB', period: '月付', purchaseAt: '2026-10-08', gifts: [{ name: 'Plus 30 天赠送', grantedAt: '2026-10-02' }] }, subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: 'Free', period: '—', purchasedAt: '2026-09-12' }, { pl: 'bird', model: 'K3', sn: '', tier: 'Plus', period: '月付', purchasedAt: '2026-10-08' }], accountBenefits: [{ pl: 'bird', name: 'AI Agent Pack', price: 3.99, period: '月付', usage: '已用 12/300 次' }], tags: ['K3开卖活动'], packs: ['P003'], freeze: false },
+    { id: 'U1002', email: 'daniel.ng@mail.com', region: '北美', pl: 'bird', createdAt: '2026-06-02', lastActive: '2026-10-09', devices: [{ sn: 'K3-A1C9D02', model: 'K3', activated: '2026-06-02', bound: true }, { sn: 'K3-A1C9D03', model: 'K3', activated: '2026-07-15', bound: true }, { sn: 'K3-A1C9D04', model: 'K3', activated: '2026-08-20', bound: true }], sub: { tier: 'Pro', trial: '已转正式', autoRenew: true, expireAt: '2027-06-02', aiRemaining: 620, storageUsed: '12.4/20GB', period: '年付', purchaseAt: '2026-08-02', gifts: [{ name: 'Pro 30 天赠送', grantedAt: '2026-08-01' }] }, subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: 'Free', period: '—', purchasedAt: '2026-06-02' }, { pl: 'bird', model: 'K3', sn: '', tier: 'Plus', period: '月付', purchasedAt: '2026-07-02' }, { pl: 'bird', model: 'K3', sn: '', tier: 'Pro', period: '年付', purchasedAt: '2026-08-02' }], accountBenefits: [{ pl: 'bird', name: 'Extra Memory Pack', price: 2.99, period: '月付', usage: '永久收藏 已用 4/100 格' }, { pl: 'bird', name: 'AI Agent Pack', price: 3.99, period: '月付', usage: '已用 380/300 次' }], tags: ['Pro用户', '多设备'], packs: [], freeze: false },
+    { id: 'U1003', email: 'sophie.lee@mail.com', region: '欧洲', pl: 'bird', createdAt: '2026-09-28', lastActive: '2026-10-03', devices: [{ sn: 'K3-B2F7A11', model: 'K3', activated: '2026-09-28', bound: true }], sub: { tier: 'Free', trial: '—', autoRenew: false, expireAt: '—', aiRemaining: 12, storageUsed: '0.8/1GB', period: '—', purchaseAt: '—', gifts: [] }, subHistory: [], accountBenefits: [], tags: [], packs: ['P005'], freeze: false },
+    { id: 'U1004', email: 'miguel.rodriguez@mail.com', region: '欧洲', pl: 'bird', createdAt: '2026-08-14', lastActive: '2026-10-06', devices: [{ sn: 'K3-C3E5B21', model: 'K3', activated: '2026-08-14', bound: true }], sub: { tier: 'Plus', trial: '已取消自动续费', autoRenew: false, expireAt: '2026-11-14', aiRemaining: 45, storageUsed: '8.9/10GB', period: '月付', purchaseAt: '2026-09-14', gifts: [] }, subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: 'Free', period: '—', purchasedAt: '2026-08-14' }, { pl: 'bird', model: 'K3', sn: '', tier: 'Plus', period: '月付', purchasedAt: '2026-09-14' }], accountBenefits: [{ pl: 'bird', name: 'AI Agent Pack', price: 3.99, period: '月付', usage: '已用 255/300 次' }], tags: ['流失风险'], packs: ['P002'], freeze: false },
+    { id: 'U1005', email: 'hannah.kim@mail.com', region: '北美', pl: 'bird', createdAt: '2026-07-01', lastActive: '2026-10-09', devices: [{ sn: 'K3-D2F8C33', model: 'K3', activated: '2026-07-01', bound: true }], sub: { tier: 'Plus', trial: '已转正式', autoRenew: true, expireAt: '2027-07-01', aiRemaining: 45, storageUsed: '6.1/10GB', period: '月付', purchaseAt: '2026-08-01', gifts: [] }, subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: 'Free', period: '—', purchasedAt: '2026-07-01' }, { pl: 'bird', model: 'K3', sn: '', tier: 'Plus', period: '月付', purchasedAt: '2026-08-01' }], accountBenefits: [], tags: [], packs: [], freeze: false },
+    { id: 'U2001', email: 'jack.taylor@mail.com', region: '北美', pl: 'hunt', createdAt: '2026-09-30', lastActive: '2026-10-09', devices: [{ sn: 'TL300-00A1F1', model: 'TL300', activated: '2026-09-30', bound: true }], subPerDevice: [{ sn: 'TL300-00A1F1', tier: 'Plus', expStatus: '体验中（第10天）', expireAt: '2026-10-14', period: '体验期', purchaseAt: '—', gifts: [] }], subHistory: [], accountBenefits: [{ pl: 'hunt', name: 'AI Agent Pack', price: 3.99, period: '月付', usage: '剩余 282/300 次' }], hdRemaining: 2, aiDialog: 18, limitedPurchases: [], tags: ['体验期'], packs: ['P001'], freeze: false },
+    { id: 'U2002', email: 'luke.morgan@mail.com', region: '北美', pl: 'hunt', createdAt: '2026-08-08', lastActive: '2026-10-09', devices: [{ sn: 'TL300-00B2G2', model: 'TL300', activated: '2026-08-08', bound: true }], subPerDevice: [{ sn: 'TL300-00B2G2', tier: 'Pro', expStatus: '已转付费', expireAt: '2027-08-08', period: '年付', purchaseAt: '2026-08-08', gifts: [] }], subHistory: [{ pl: 'hunt', model: 'TL300', sn: 'TL300-00B2G2', tier: 'Starter（体验）', period: '体验期', purchasedAt: '2026-08-08' }, { pl: 'hunt', model: 'TL300', sn: 'TL300-00B2G2', tier: 'Pro', period: '年付', purchasedAt: '2026-08-08' }], accountBenefits: [{ pl: 'hunt', name: 'HD Pack', price: 4.99, period: '单次（100 张）', usage: 'HD 剩余 62/100 张' }, { pl: 'hunt', name: 'AI Agent Pack', price: 3.99, period: '月付', usage: '剩余 40/300 次' }], hdRemaining: 21, aiDialog: 260, limitedPurchases: [], tags: [], packs: [], freeze: false },
+    { id: 'U2003', email: 'olivia.brown@mail.com', region: '欧洲', pl: 'hunt', createdAt: '2026-09-20', lastActive: '2026-10-05', devices: [{ sn: 'TL300-00C3H3', model: 'TL300', activated: '2026-09-20', bound: true }], subPerDevice: [{ sn: 'TL300-00C3H3', tier: 'Starter', expStatus: '体验已过期未付费', expireAt: '2026-10-04', period: '体验期', purchaseAt: '—', gifts: [] }], subHistory: [], accountBenefits: [], hdRemaining: 0, aiDialog: 0, limitedPurchases: [], tags: ['体验过期'], packs: ['P001'], freeze: false },
+    { id: 'U2004', email: 'tyler.james@mail.com', region: '北美', pl: 'hunt', createdAt: '2026-07-19', lastActive: '2026-10-08', devices: [{ sn: 'TL300-00D4J4', model: 'TL300', activated: '2026-07-19', bound: true }], subPerDevice: [{ sn: 'TL300-00D4J4', tier: 'Pro', expStatus: '已转付费', expireAt: '2027-04-18', period: '年付', purchaseAt: '2026-07-19', gifts: [] }, { sn: 'TL300-00D4J4', tier: '季卡 Plus（猎人季）', expStatus: '已转付费', expireAt: '2027-04-17', period: '季卡', purchaseAt: '2026-10-18', gifts: [] }], subHistory: [{ pl: 'hunt', model: 'TL300', sn: 'TL300-00D4J4', tier: 'Starter（体验）', period: '体验期', purchasedAt: '2026-07-19' }, { pl: 'hunt', model: 'TL300', sn: 'TL300-00D4J4', tier: 'Pro', period: '年付', purchasedAt: '2026-07-19' }], accountBenefits: [{ pl: 'hunt', name: 'HD Pack', price: 4.99, period: '单次（100 张）', usage: 'HD 剩余 8/100 张' }, { pl: 'hunt', name: 'AI Agent Pack', price: 3.99, period: '月付', usage: '剩余 150/300 次' }], hdRemaining: 14, aiDialog: 150, limitedPurchases: [{ name: '季卡 Plus（猎人季）', price: 29.99, boughtAt: '2026-10-18', valid: '6 个月' }], tags: ['季卡用户'], packs: [], freeze: false },
+    { id: 'U2005', email: 'isaac.hughes@mail.com', region: '欧洲', pl: 'hunt', createdAt: '2026-08-25', lastActive: '2026-10-07', devices: [{ sn: 'TL300-00E5K5', model: 'TL300', activated: '2026-08-25', bound: true }, { sn: 'TL300-00E5K6', model: 'TL300', activated: '2026-09-30', bound: true }], subPerDevice: [{ sn: 'TL300-00E5K5', tier: 'Starter', expStatus: '已转付费', expireAt: '2027-08-25', period: '年付', purchaseAt: '2026-08-25', gifts: [] }, { sn: 'TL300-00E5K6', tier: '—', expStatus: '体验中（第9天）', expireAt: '2026-10-14', period: '体验期', purchaseAt: '—', gifts: [] }], subHistory: [{ pl: 'hunt', model: 'TL300', sn: 'TL300-00E5K5', tier: 'Starter（体验）', period: '体验期', purchasedAt: '2026-08-25' }], accountBenefits: [{ pl: 'hunt', name: 'AI Agent Pack', price: 3.99, period: '月付', usage: '剩余 278/300 次' }], hdRemaining: 3, aiDialog: 22, limitedPurchases: [], tags: ['双设备'], packs: [], freeze: false },
+    /* 双机用户 */
+    { id: 'U3001', email: 'maya.sato@mail.com', region: '北美', pl: 'both', createdAt: '2026-07-10', lastActive: '2026-10-09', devices: [{ sn: 'K3-E6F7L7', model: 'K3', activated: '2026-07-10', bound: true }, { sn: 'K3-E6F7L8', model: 'K3', activated: '2026-08-01', bound: true }, { sn: 'TL300-00F6M6', model: 'TL300', activated: '2026-09-15', bound: true }], sub: { tier: 'Plus', trial: '已转正式', autoRenew: true, expireAt: '2027-07-10', aiRemaining: 190, storageUsed: '7.7/10GB', period: '年付', purchaseAt: '2026-07-10', gifts: [{ name: 'Plus 30 天赠送', grantedAt: '2026-09-20' }] }, subPerDevice: [{ sn: 'TL300-00F6M6', tier: 'Plus', expStatus: '已转付费', expireAt: '2027-09-15', period: '年付', purchaseAt: '2026-09-15', gifts: [] }], subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: 'Free', period: '—', purchasedAt: '2026-07-10' }, { pl: 'bird', model: 'K3', sn: '', tier: 'Plus', period: '年付', purchasedAt: '2026-07-10' }, { pl: 'hunt', model: 'TL300', sn: 'TL300-00F6M6', tier: 'Starter（体验）', period: '体验期', purchasedAt: '2026-09-15' }, { pl: 'hunt', model: 'TL300', sn: 'TL300-00F6M6', tier: 'Plus', period: '年付', purchasedAt: '2026-09-15' }], accountBenefits: [{ pl: 'bird', name: 'Extra Memory Pack', price: 2.99, period: '月付', usage: '永久收藏 已用 22/100 格' }, { pl: 'hunt', name: 'HD Pack', price: 4.99, period: '单次（100 张）', usage: 'HD 剩余 88/100 张' }], hdRemaining: 6, aiDialog: 88, limitedPurchases: [], tags: ['双机用户'], packs: [], freeze: false },
+    { id: 'U3002', email: 'noah.williams@mail.com', region: '欧洲', pl: 'both', createdAt: '2026-08-05', lastActive: '2026-10-01', devices: [{ sn: 'K3-F8G9N9', model: 'K3', activated: '2026-08-05', bound: true }, { sn: 'TL300-00G7N7', model: 'TL300', activated: '2026-09-10', bound: true }], sub: { tier: 'Free', trial: '—', autoRenew: false, expireAt: '—', aiRemaining: 5, storageUsed: '0.5/1GB', period: '—', purchaseAt: '—', gifts: [] }, subPerDevice: [{ sn: 'TL300-00G7N7', tier: 'Starter', expStatus: '体验中（第4天）', expireAt: '2026-10-20', period: '体验期', purchaseAt: '—', gifts: [] }], subHistory: [], accountBenefits: [], hdRemaining: 4, aiDialog: 27, limitedPurchases: [], tags: ['双机用户'], packs: ['P005'], freeze: false },
+    /* 其余普通用户 */
+    { id: 'U1006', email: 'liam.smith@mail.com', region: '北美', pl: 'bird', createdAt: '2026-10-02', lastActive: '2026-10-09', devices: [{ sn: 'K3-G0H1P0', model: 'K3', activated: '2026-10-02', bound: true }], sub: { tier: 'Plus', trial: '试用中（7天）', autoRenew: true, expireAt: '2026-10-16', aiRemaining: 300, storageUsed: '0.2/10GB', period: '月付', purchaseAt: '2026-10-02', gifts: [{ name: 'AI Agent Pack 300 次赠送', grantedAt: '2026-10-03' }] }, subHistory: [], accountBenefits: [], tags: [], packs: ['P003'], freeze: false },
+    { id: 'U1007', email: 'ava.martin@mail.com', region: '欧洲', pl: 'bird', createdAt: '2026-05-20', lastActive: '2026-09-01', devices: [{ sn: 'K3-H1J2Q1', model: 'K3', activated: '2026-05-20', bound: false }], sub: { tier: 'Free', trial: '—', autoRenew: false, expireAt: '—', aiRemaining: 0, storageUsed: '1.0/1GB', period: '—', purchaseAt: '—', gifts: [] }, subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: 'Plus', period: '月付', purchasedAt: '2026-05-20' }], accountBenefits: [], tags: ['30日未活跃'], packs: ['P004'], freeze: false },
+    { id: 'U2006', email: 'ethan.clark@mail.com', region: '北美', pl: 'hunt', createdAt: '2026-08-30', lastActive: '2026-10-08', devices: [{ sn: 'TL300-00H2R2', model: 'TL300', activated: '2026-08-30', bound: true }], subPerDevice: [{ sn: 'TL300-00H2R2', tier: 'Starter', expStatus: '已转付费', expireAt: '2027-08-30', period: '年付', purchaseAt: '2026-08-30', gifts: [] }], subHistory: [{ pl: 'hunt', model: 'TL300', sn: 'TL300-00H2R2', tier: 'Starter（体验）', period: '体验期', purchasedAt: '2026-08-30' }, { pl: 'hunt', model: 'TL300', sn: 'TL300-00H2R2', tier: 'Starter', period: '年付', purchasedAt: '2026-08-30' }], accountBenefits: [], hdRemaining: 1, aiDialog: 45, limitedPurchases: [], tags: [], packs: [], freeze: false },
+    { id: 'U1008', email: 'mia.johnson@mail.com', region: '北美', pl: 'bird', createdAt: '2026-09-05', lastActive: '2026-10-07', devices: [{ sn: 'K3-J3K4S2', model: 'K3', activated: '2026-09-05', bound: true }], sub: { tier: 'Plus', trial: '已取消自动续费', autoRenew: false, expireAt: '2026-11-05', aiRemaining: 210, storageUsed: '4.4/10GB', period: '月付', purchaseAt: '2026-10-05', gifts: [] }, subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: 'Free', period: '—', purchasedAt: '2026-09-05' }, { pl: 'bird', model: 'K3', sn: '', tier: 'Plus', period: '月付', purchasedAt: '2026-10-05' }], accountBenefits: [{ pl: 'bird', name: 'AI Agent Pack', price: 3.99, period: '月付', usage: '已用 90/300 次' }], tags: [], packs: ['P002'], freeze: false },
+    { id: 'U2007', email: 'logan.davis@mail.com', region: '欧洲', pl: 'hunt', createdAt: '2026-09-25', lastActive: '2026-10-09', devices: [{ sn: 'TL300-00I3T3', model: 'TL300', activated: '2026-09-25', bound: true }], subPerDevice: [{ sn: 'TL300-00I3T3', tier: 'Pro', expStatus: '体验中（第6天）', expireAt: '2026-10-13', period: '体验期', purchaseAt: '—', gifts: [] }], subHistory: [], accountBenefits: [{ pl: 'hunt', name: 'AI Agent Pack', price: 3.99, period: '月付', usage: '剩余 270/300 次' }], hdRemaining: 3, aiDialog: 30, limitedPurchases: [], tags: ['体验期'], packs: ['P001'], freeze: false },
+    { id: 'U1009', email: 'charlotte.w@mail.com', region: '欧洲', pl: 'bird', createdAt: '2026-04-11', lastActive: '2026-10-09', devices: [{ sn: 'K3-K4L5U3', model: 'K3', activated: '2026-04-11', bound: true }], sub: { tier: 'Pro', trial: '已转正式', autoRenew: true, expireAt: '2027-04-11', aiRemaining: 830, storageUsed: '15.2/20GB', period: '年付', purchaseAt: '2026-06-11', gifts: [] }, subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: 'Free', period: '—', purchasedAt: '2026-04-11' }, { pl: 'bird', model: 'K3', sn: '', tier: 'Plus', period: '月付', purchasedAt: '2026-05-11' }, { pl: 'bird', model: 'K3', sn: '', tier: 'Pro', period: '年付', purchasedAt: '2026-06-11' }], accountBenefits: [{ pl: 'bird', name: 'Extra Memory Pack', price: 2.99, period: '月付', usage: '永久收藏 已用 5/100 格' }], tags: ['Pro用户'], packs: [], freeze: false },
+    { id: 'U2008', email: 'william.hall@mail.com', region: '北美', pl: 'hunt', createdAt: '2026-09-18', lastActive: '2026-10-02', devices: [{ sn: 'TL300-00J4V4', model: 'TL300', activated: '2026-09-18', bound: true }], subPerDevice: [{ sn: 'TL300-00J4V4', tier: 'Starter', expStatus: '体验已过期未付费', expireAt: '2026-10-02', period: '体验期', purchaseAt: '—', gifts: [] }], subHistory: [], accountBenefits: [], hdRemaining: 0, aiDialog: 0, limitedPurchases: [], tags: ['体验过期'], packs: ['P001'], freeze: false },
+    { id: 'U1010', email: 'amelia.b@mail.com', region: '北美', pl: 'bird', createdAt: '2026-08-19', lastActive: '2026-10-06', devices: [{ sn: 'K3-L5M6W4', model: 'K3', activated: '2026-08-19', bound: true }], sub: { tier: 'Free', trial: '—', autoRenew: false, expireAt: '—', aiRemaining: 3, storageUsed: '0.9/1GB', period: '—', purchaseAt: '—', gifts: [] }, subHistory: [], accountBenefits: [], tags: [], packs: ['P004'], freeze: false },
+  ],
+
+  /* ---------- 订单（§6.3 订单查询；订阅/兑换码核销/优惠券核销/赠送，状态机见文档 6.3.4） ---------- */
+  orders: [
+    /* U1001 观鸟 Plus 试用 */
+    { id: 'ORD20260912001', type: '订阅', pl: 'bird', userId: 'U1001', email: 'emma.wilson@mail.com', sn: '', item: 'Plus 月付', amount: 4.99, currency: 'USD', status: '已到账', createdAt: '2026-09-12', paidAt: '2026-09-12', channel: 'App Store' },
+    { id: 'ORD20261002001', type: '兑换码核销', pl: 'bird', userId: 'U1001', email: 'emma.wilson@mail.com', sn: '', item: 'Plus 30 天赠送', amount: 0, currency: 'USD', status: '已核销', createdAt: '2026-10-02', paidAt: '2026-10-02', channel: '兑换码' },
+    { id: 'ORD20261008001', type: '订阅', pl: 'bird', userId: 'U1001', email: 'emma.wilson@mail.com', sn: '', item: 'Plus 月付', amount: 4.99, currency: 'USD', status: '已到账', createdAt: '2026-10-08', paidAt: '2026-10-08', channel: 'App Store' },
+    /* U1002 观鸟 Pro 年付 */
+    { id: 'ORD20260602001', type: '订阅', pl: 'bird', userId: 'U1002', email: 'daniel.ng@mail.com', sn: '', item: 'Plus 月付', amount: 4.99, currency: 'USD', status: '已退款', createdAt: '2026-06-02', paidAt: '2026-06-02', channel: 'App Store' },
+    { id: 'ORD20260702001', type: '订阅', pl: 'bird', userId: 'U1002', email: 'daniel.ng@mail.com', sn: '', item: 'Pro 月付', amount: 9.99, currency: 'USD', status: '已到账', createdAt: '2026-07-02', paidAt: '2026-07-02', channel: 'App Store' },
+    { id: 'ORD20260801001', type: '赠送', pl: 'bird', userId: 'U1002', email: 'daniel.ng@mail.com', sn: '', item: 'Pro 30 天赠送', amount: 0, currency: 'USD', status: '已发放', createdAt: '2026-08-01', paidAt: '—', channel: '后台赠送' },
+    { id: 'ORD20260802001', type: '订阅', pl: 'bird', userId: 'U1002', email: 'daniel.ng@mail.com', sn: '', item: 'Pro 年付', amount: 99.99, currency: 'USD', status: '已到账', createdAt: '2026-08-02', paidAt: '2026-08-02', channel: 'App Store' },
+    /* U1003 观鸟 Free */
+    { id: 'ORD20260928001', type: '兑换码核销', pl: 'bird', userId: 'U1003', email: 'sophie.lee@mail.com', sn: '', item: 'AI Agent 包 300 次（购机附赠）', amount: 0, currency: 'USD', status: '已核销', createdAt: '2026-09-28', paidAt: '2026-09-28', channel: '兑换码' },
+    /* U1004 观鸟 Plus 已取消自动续费 */
+    { id: 'ORD20260914001', type: '订阅', pl: 'bird', userId: 'U1004', email: 'miguel.rodriguez@mail.com', sn: '', item: 'Plus 月付', amount: 4.99, currency: 'USD', status: '已到账', createdAt: '2026-09-14', paidAt: '2026-09-14', channel: 'App Store' },
+    { id: 'ORD20261005001', type: '订阅', pl: 'bird', userId: 'U1004', email: 'miguel.rodriguez@mail.com', sn: '', item: 'Plus 月付', amount: 4.99, currency: 'USD', status: '已到账', createdAt: '2026-10-05', paidAt: '2026-10-05', channel: 'App Store' },
+    /* U1005 观鸟 Plus */
+    { id: 'ORD20260801001', type: '订阅', pl: 'bird', userId: 'U1005', email: 'hannah.kim@mail.com', sn: '', item: 'Plus 月付', amount: 4.99, currency: 'USD', status: '已到账', createdAt: '2026-08-01', paidAt: '2026-08-01', channel: 'App Store' },
+    /* U2001 狩猎 Plus 体验中 */
+    { id: 'ORD20260930001', type: '赠送', pl: 'hunt', userId: 'U2001', email: 'jack.taylor@mail.com', sn: 'TL300-00A1F1', item: '季卡 Starter（购机附赠）', amount: 0, currency: 'USD', status: '已发放', createdAt: '2026-09-30', paidAt: '—', channel: '后台赠送' },
+    { id: 'ORD20261008001', type: '订阅', pl: 'hunt', userId: 'U2001', email: 'jack.taylor@mail.com', sn: 'TL300-00A1F1', item: 'Plus 月付（体验转正式）', amount: 9.99, currency: 'USD', status: '待支付', createdAt: '2026-10-08', paidAt: '—', channel: 'App Store' },
+    /* U2002 狩猎 Pro 年付 */
+    { id: 'ORD20260808001', type: '订阅', pl: 'hunt', userId: 'U2002', email: 'luke.morgan@mail.com', sn: 'TL300-00B2G2', item: 'Pro 年付', amount: 149.99, currency: 'USD', status: '已到账', createdAt: '2026-08-08', paidAt: '2026-08-08', channel: 'App Store' },
+    { id: 'ORD20260901001', type: '兑换码核销', pl: 'hunt', userId: 'U2002', email: 'luke.morgan@mail.com', sn: 'TL300-00B2G2', item: 'HD Pack 100 张', amount: 0, currency: 'USD', status: '已核销', createdAt: '2026-09-01', paidAt: '2026-09-01', channel: '兑换码' },
+    /* U2003 体验过期 */
+    { id: 'ORD20260920001', type: '赠送', pl: 'hunt', userId: 'U2003', email: 'olivia.brown@mail.com', sn: 'TL300-00C3H3', item: 'Starter 体验期（14 天）', amount: 0, currency: 'USD', status: '已发放', createdAt: '2026-09-20', paidAt: '—', channel: '后台赠送' },
+    /* U2004 狩猎 Pro + 季卡（一设备多套餐） */
+    { id: 'ORD20260719001', type: '订阅', pl: 'hunt', userId: 'U2004', email: 'tyler.james@mail.com', sn: 'TL300-00D4J4', item: 'Pro 年付', amount: 149.99, currency: 'USD', status: '已到账', createdAt: '2026-07-19', paidAt: '2026-07-19', channel: 'App Store' },
+    { id: 'ORD20261018001', type: '订阅', pl: 'hunt', userId: 'U2004', email: 'tyler.james@mail.com', sn: 'TL300-00D4J4', item: '季卡 Plus（猎人季）', amount: 29.99, currency: 'USD', status: '已到账', createdAt: '2026-10-18', paidAt: '2026-10-18', channel: 'App Store' },
+    { id: 'ORD20261018002', type: '优惠券核销', pl: 'hunt', userId: 'U2004', email: 'tyler.james@mail.com', sn: 'TL300-00D4J4', item: 'HD Pack 折扣券', amount: 0, currency: 'USD', status: '已使用', createdAt: '2026-10-18', paidAt: '2026-10-18', channel: '优惠券' },
+    /* U2005 狩猎双设备 */
+    { id: 'ORD20260825001', type: '订阅', pl: 'hunt', userId: 'U2005', email: 'isaac.hughes@mail.com', sn: 'TL300-00E5K5', item: 'Starter 年付', amount: 59.99, currency: 'USD', status: '已到账', createdAt: '2026-08-25', paidAt: '2026-08-25', channel: 'App Store' },
+    /* U3001 双机 */
+    { id: 'ORD20260710001', type: '订阅', pl: 'bird', userId: 'U3001', email: 'maya.sato@mail.com', sn: '', item: 'Plus 年付', amount: 49.99, currency: 'USD', status: '已到账', createdAt: '2026-07-10', paidAt: '2026-07-10', channel: 'App Store' },
+    { id: 'ORD20260915001', type: '订阅', pl: 'hunt', userId: 'U3001', email: 'maya.sato@mail.com', sn: 'TL300-00F6M6', item: 'Plus 年付', amount: 79.99, currency: 'USD', status: '已到账', createdAt: '2026-09-15', paidAt: '2026-09-15', channel: 'App Store' },
+    { id: 'ORD20260915002', type: '兑换码核销', pl: 'hunt', userId: 'U3001', email: 'maya.sato@mail.com', sn: 'TL300-00F6M6', item: '季卡 Starter（购机附赠）', amount: 0, currency: 'USD', status: '已核销', createdAt: '2026-09-15', paidAt: '2026-09-15', channel: '兑换码' },
+    { id: 'ORD20260920001', type: '赠送', pl: 'bird', userId: 'U3001', email: 'maya.sato@mail.com', sn: '', item: 'Plus 30 天赠送', amount: 0, currency: 'USD', status: '已发放', createdAt: '2026-09-20', paidAt: '—', channel: '后台赠送' },
+    /* U3002 双机 */
+    { id: 'ORD20260805001', type: '兑换码核销', pl: 'bird', userId: 'U3002', email: 'noah.williams@mail.com', sn: '', item: 'AI Agent 包 300 次（购机附赠）', amount: 0, currency: 'USD', status: '已核销', createdAt: '2026-08-05', paidAt: '2026-08-05', channel: '兑换码' },
+    { id: 'ORD20260910001', type: '赠送', pl: 'hunt', userId: 'U3002', email: 'noah.williams@mail.com', sn: 'TL300-00G7N7', item: 'Starter 体验期（14 天）', amount: 0, currency: 'USD', status: '已发放', createdAt: '2026-09-10', paidAt: '—', channel: '后台赠送' },
+    /* 其余用户少量订单 */
+    { id: 'ORD20260905001', type: '订阅', pl: 'bird', userId: 'U1008', email: 'mia.johnson@mail.com', sn: '', item: 'Plus 月付', amount: 4.99, currency: 'USD', status: '已到账', createdAt: '2026-09-05', paidAt: '2026-09-05', channel: 'App Store' },
+    { id: 'ORD20260411001', type: '订阅', pl: 'bird', userId: 'U1009', email: 'charlotte.w@mail.com', sn: '', item: 'Pro 年付', amount: 99.99, currency: 'USD', status: '已到账', createdAt: '2026-04-11', paidAt: '2026-04-11', channel: 'App Store' },
+    { id: 'ORD20260830001', type: '订阅', pl: 'hunt', userId: 'U2006', email: 'ethan.clark@mail.com', sn: 'TL300-00H2R2', item: 'Starter 年付', amount: 59.99, currency: 'USD', status: '已到账', createdAt: '2026-08-30', paidAt: '2026-08-30', channel: 'App Store' },
+    { id: 'ORD20260918001', type: '赠送', pl: 'hunt', userId: 'U2008', email: 'william.hall@mail.com', sn: 'TL300-00J4V4', item: 'Starter 体验期（14 天）', amount: 0, currency: 'USD', status: '已发放', createdAt: '2026-09-18', paidAt: '—', channel: '后台赠送' },
+  ],
+
+  /* ---------- 用户分组（§5.3；状态机：未引用/已引用/已停用；被引用只列模块，不复制名单） ---------- */
+  audiencePacks: [
+    { id: 'P001', name: '狩猎体验期未转付费', pl: 'hunt', desc: '14 天新手体验期内、第 7 天以上且未转付费', tags: ['待触达'], conditions: '产品线=狩猎 AND 体验状态∈{体验中(第7+天), 已过期未付费}', est: 1240, status: '已引用', creator: 'Bobi', createdAt: '2026-09-28', refCount: 1, refs: [{ module: 'Push', name: 'S001 体验期转化提醒' }] },
+    { id: 'P002', name: '订阅即将到期 ≤7 天', pl: 'both', desc: '付费订阅剩余天数 ≤7 天（含自动续费已关闭）', tags: ['待触达'], conditions: '订阅剩余天数 ≤7 天', est: 8640, status: '已引用', creator: '运营A', createdAt: '2026-09-15', refCount: 1, refs: [{ module: 'Push', name: 'S002 续费到期提醒' }] },
+    { id: 'P003', name: '观鸟 7 天试用中用户', pl: 'bird', desc: '当前处于 7 天试用期且未取消自动续费', tags: ['购机附赠'], conditions: '产品线=观鸟 AND 试用状态=试用中(7天)', est: 532, status: '已引用', creator: '运营A', createdAt: '2026-09-20', refCount: 2, refs: [{ module: '权益下发', name: 'T004 K3 开卖：AI Agent 包赠礼' }, { module: '弹窗', name: 'S003 新用户欢迎弹窗' }] },
+    { id: 'P004', name: '30 日未活跃免费用户', pl: 'both', desc: '30 日未活跃且订阅为免费档', tags: [], conditions: '最近活跃=30日未活跃 AND 订阅状态=免费', est: 15230, status: '已停用', creator: 'Bobi', createdAt: '2026-09-10', refCount: 0, refs: [] },
+    { id: 'P005', name: '已购 K3 未订阅', pl: 'bird', desc: '已激活 K3 设备且从未付费订阅', tags: ['黑五活动'], conditions: '已购硬件型号=K3 AND 订阅状态=免费', est: 2210, status: '未引用', creator: 'Bobi', createdAt: '2026-10-05', refCount: 0, refs: [] },
+  ],
+
+  /* ---------- 分组标签体系（§5.3.8：打标对象是分组本身，不自动打给组内用户） ---------- */
+  groupTags: [
+    { name: '黑五活动', type: '活动', color: '#e6f4ff', usedBy: 1 },
+    { name: '购机附赠', type: '活动', color: '#fff1d6', usedBy: 1 },
+    { name: '客服补偿', type: '客服', color: '#ffe8e5', usedBy: 0 },
+    { name: '红人福利', type: '活动', color: '#e6f4ff', usedBy: 0 },
+    { name: '待触达', type: '触达', color: '#f0f0f0', usedBy: 2 },
+    { name: '已触达', type: '触达', color: '#f0f0f0', usedBy: 0 },
+    { name: '数据测试', type: '数据', color: '#f0f0f0', usedBy: 0 },
+  ],
+
+  /* ---------- 权益下发任务（状态机：草稿/待下发/下发中/已下发；count=生成数量） ---------- */
+  benefitTasks: [
+    { id: 'T001', name: '购机附赠：季卡兑换码批次', type: '兑换码', pl: 'hunt', ownership: '设备级', target: 'SN 导入（TL300 开卖批次）', benefit: '季卡 Plus ×1000', status: '已下发', count: 1000, sent: 1000, success: 998, failed: 2, creator: 'Bobi', createdAt: '2026-09-20', expires: '2026-12-31' },
+    { id: 'T002', name: '客服补偿：Plus 30 天', type: '优惠券', pl: 'bird', ownership: '账号级', target: 'P002（订阅即将到期 ≤7 天）', benefit: 'Plus 30 天赠送', status: '草稿', count: 500, sent: 0, success: 0, failed: 0, creator: '客服C', createdAt: '2026-10-07', expires: '2026-12-31' },
+    { id: 'T003', name: '红人福利：Pro 90 天', type: '优惠券', pl: 'bird', ownership: '账号级', target: '手动名单（12 人）', benefit: 'Pro 90 天赠送', status: '下发中', count: 12, sent: 12, success: 9, failed: 3, creator: '运营A', createdAt: '2026-10-01', expires: '2026-11-30' },
+    { id: 'T004', name: 'K3 开卖：AI Agent 包赠礼', type: '兑换码', pl: 'bird', ownership: '账号级', target: 'P003（观鸟试用中）', benefit: 'AI Agent 包 300 次', status: '待下发', count: 300, sent: 0, success: 0, failed: 0, creator: 'Bobi', createdAt: '2026-10-08', expires: '2026-10-31' },
+  ],
+
+  /* ---------- 策略（状态机：草稿/待发布（定时）/已发布/已停用；渠道=弹窗/Push/Banner/站内信，无邮件） ---------- */
+  strategies: [
+    { id: 'S001', name: { en: 'Trial conversion nudge', zh: '体验期转化提醒' }, type: 'Push', pl: 'hunt', region: '全部', trigger: '定时（体验第 10 天 09:00 用户本地时区）', pack: 'P001', channels: 'Push', status: '已发布', creator: 'Bobi', createdAt: '2026-09-30', stats: { sent: 842, reach: 812, click: 196, conv: 58 } },
+    { id: 'S002', name: { en: 'Renewal reminder', zh: '续费到期提醒' }, type: 'Push', pl: 'bird', region: '全部', trigger: '事件（订阅到期前 3 天）', pack: 'P002', channels: 'Push + 站内信', status: '已发布', creator: '运营A', createdAt: '2026-09-25', stats: { sent: 2140, reach: 2095, click: 688, conv: 312 } },
+    { id: 'S003', name: { en: 'Welcome popup', zh: '新用户欢迎弹窗' }, type: '弹窗', pl: 'bird', region: '欧洲', trigger: '事件（App 启动，每日一次）', pack: 'P003', channels: '弹窗', status: '待发布', creator: '运营A', createdAt: '2026-10-06', stats: { sent: 0, reach: 0, click: 0, conv: 0 } },
+    { id: 'S004', name: { en: 'Black Friday teaser', zh: '黑五限定套餐预告' }, type: 'Banner', pl: 'hunt', region: '北美', trigger: '定时（2026-11-14 ~ 11-20）', pack: null, channels: 'Banner', status: '草稿', creator: 'Bobi', createdAt: '2026-10-08', stats: { sent: 0, reach: 0, click: 0, conv: 0 } },
+  ],
+
+  /* ---------- 渠道配置 ---------- */
+  channels: {
+    popup: { template: '居中弹窗', buttons: '主：立即订阅 / 次：稍后再说', frequency: '每日一次', priority: 2 },
+    push: { provider: 'APNs + Firebase', deepLink: 'parallens://renew', badge: '开', receipt: '已启用' },
+    banner: { position: '探索 Tab 顶部', carousel: '第 1 位', schedule: '2026-11-14 ~ 11-27' },
+    inbox: { category: '营销通知', expiry: '30 天', readLogic: '已读即折叠' },
+    email: { provider: 'SendGrid', category: 'Transactional + Marketing', note: '【待确认】渠道清单（PRD §13 #1）' },
+  },
+
+  /* ---------- 全局频控（V2 预留） ---------- */
+  frequency: {
+    totalDaily: 3, totalWeekly: 12,
+    channelLimits: { popup: 1, push: 2, banner: 1, inbox: 3, email: 1 },
+    priority: ['续费提醒', '活动通知', '促销'],
+    exclusive: ['订阅中用户不弹促销弹窗', '当天已弹窗则不再 Push 同类内容'],
+    quietHours: '21:00 ~ 09:00（用户本地时区）',
+    today: { popup: 8420, push: 15320, banner: 4210, inbox: 6890, email: 3320 },
+  },
+};
+
+</script>
+<script>
+/* ============================================================
+   Parallens 用户运营后台 · 公共工具（纯函数，无副作用）
+   命名空间：PL
+   ============================================================ */
+window.PL = {};
+
+/** HTML 转义 */
+PL.esc = function (s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+};
+
+/** 金额 */
+PL.money = function (n) {
+  if (n == null) return '—';
+  return '$' + Number(n).toFixed(2).replace(/\.00$/, '');
+};
+
+/** 产品线标签 */
+PL.plTag = function (pl) {
+  var map = { bird: ['pl-tag bird', '🐦 观鸟线'], hunt: ['pl-tag hunt', '🦌 狩猎线'], both: ['pl-tag both', '双线'] };
+  var m = map[pl] || map.both;
+  return '<span class="' + m[0] + '">' + m[1] + '</span>';
+};
+
+/** 状态徽章（后台通用状态机） */
+PL.badge = function (status) {
+  var map = {
+    '草稿': 'badge-gray', '审批中': 'badge-blue', '生效中': 'badge-green', '已上架': 'badge-green',
+    '生效': 'badge-green', '已发布': 'badge-green', '已停用': 'badge-gray', '待生效': 'badge-orange',
+    '下发中': 'badge-blue', '部分成功': 'badge-orange', '已完成': 'badge-green', '已终止': 'badge-red',
+    '体验中（7天）': 'badge-blue', '体验中（第10天）': 'badge-orange',
+  };
+  return '<span class="badge ' + (map[status] || 'badge-gray') + '">' + PL.esc(status) + '</span>';
+};
+
+/** 布尔徽章（是/否） */
+PL.boolBadge = function (v) {
+  return v ? '<span class="badge badge-green">开</span>' : '<span class="badge badge-gray">关</span>';
+};
+
+/** 空态 */
+PL.empty = function (text) {
+  return '<div class="empty-state"><div class="es-icon">🪶</div><p>' + PL.esc(text || '暂无数据') + '</p></div>';
+};
+
+/** 简单表格渲染 */
+PL.table = function (cols, rows, opts) {
+  opts = opts || {};
+  var th = '<tr>' + cols.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '</tr>';
+  var body;
+  if (!rows || !rows.length) {
+    body = '<tr><td colspan="' + cols.length + '">' + PL.empty(opts.emptyText || '暂无数据') + '</td></tr>';
+  } else {
+    body = rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + c + '</td>'; }).join('') + '</tr>'; }).join('');
+  }
+  return '<div class="table-wrap"><table class="table"><thead>' + th + '</thead><tbody>' + body + '</tbody></table></div>';
+};
+
+/** 表单字段行（编辑器用） */
+PL.field = function (label, inputHtml, opts) {
+  opts = opts || {};
+  return '<div class="form-field">' +
+    '<label>' + PL.esc(label) + (opts.req ? '<span class="req">*</span>' : '') + '</label>' +
+    inputHtml +
+    (opts.help ? '<span class="help">' + opts.help + '</span>' : '') +
+    '</div>';
+};
+
+/** 多语言 Tab（en/de/fr） */
+PL.langTabs = function () {
+  return '<div class="lang-tabs">' +
+    ['en', 'de', 'fr'].map(function (l, i) {
+      return '<span class="lang-tab' + (i === 0 ? ' on' : '') + '" data-lang="' + l + '">' + l.toUpperCase() + '</span>';
+    }).join('') +
+    '</div><span class="lang-fallback">未配置的语言回退英语（en）</span>';
+};
+
+</script>
+<script>
+/* ============================================================
+   Parallens 用户运营后台 · 共享壳与全局交互
+   - 侧边栏/顶栏注入（含产品线/区域/角色切换器）
+   - 全局状态 PLState（内存态，刷新重置）
+   - toast / modal / 演示说明
+   ============================================================ */
+
+/** 全局状态（演示态：内存，刷新重置） */
+window.PLState = { pl: 'both', region: 'all', role: 'operator' };
+
+/* ---------------- 侧边栏 ---------------- */
+
+var NAV = [
+  { group: '工作台', items: [ { icon: '🏠', label: '工作台', href: 'index.html', v2: false } ] },
+  { group: '本期三大模块', items: [
+    { icon: '👥', label: '用户管理', v2: false, children: [
+      { label: '用户列表', href: 'users-list.html' },
+      { label: '用户分组', href: 'audience-builder.html' },
+    ] },
+    { icon: '💰', label: '商业化', v2: false, children: [
+      { label: '套餐配置', href: 'plans-list.html' },
+      { label: '套餐编辑器', href: 'plan-editor.html' },
+      { label: '权益下发', href: 'benefit-list.html' },
+      { label: '权益下发向导', href: 'benefit-editor.html' },
+      { label: '订单查询', href: 'order-list.html' },
+    ] },
+    { icon: '📢', label: '策略触达', v2: false, children: [
+      { label: '策略配置', href: 'strategy-list.html' },
+      { label: '策略编辑器', href: 'strategy-editor.html' },
+      { label: '渠道适配', href: 'channels.html' },
+      { label: '全局频控', href: 'frequency.html' },
+    ] },
+  ] },
+  { group: '后续版本（v2）', items: [
+    { icon: '📱', label: '设备管理', v2: true },
+    { icon: '🌐', label: '探索社区', v2: true },
+    { icon: '📊', label: '数据看板', v2: true },
+    { icon: '🎯', label: '用户激励与裂变', v2: true },
+    { icon: '⚙️', label: '系统设置（RBAC/日志）', v2: true },
+  ] },
+];
+
+function renderSidebar(activePath) {
+  var html = '';
+  html += '<div class="sidebar-brand">' +
+    '<div class="brand-mark">👁</div>' +
+    '<div><div class="brand-name">Parallens</div><div class="brand-sub">用户运营后台 · Demo</div></div>' +
+    '</div>';
+  NAV.forEach(function (g) {
+    html += '<div class="nav-group">' + g.group + '</div>';
+    g.items.forEach(function (it) {
+      if (it.v2) {
+        html += '<div class="nav-item v2"><span class="nav-icon">' + it.icon + '</span>' + it.label + '<span class="badge-v2">v2</span></div>';
+      } else if (it.children) {
+        var open = it.children.some(function (c) { return c.href === activePath; });
+        html += '<div class="nav-group" style="padding-top:2px;padding-bottom:2px;"></div>';
+        it.children.forEach(function (c) {
+          var cls = 'nav-item' + (c.href === activePath ? ' active' : '');
+          html += '<a class="' + cls + '" href="' + c.href + '"><span class="nav-icon"></span>' + c.label + '</a>';
+        });
+      } else {
+        var cls2 = 'nav-item' + (it.href === activePath ? ' active' : '');
+        html += '<a class="' + cls2 + '" href="' + it.href + '"><span class="nav-icon">' + it.icon + '</span>' + it.label + '</a>';
+      }
+    });
+  });
+  html += '<div class="sidebar-foot">Demo v1.0 · 2026-08-07<br>状态存内存，刷新即重置</div>';
+  return html;
+}
+
+/* ---------------- 顶栏 ---------------- */
+
+function topbarSegs() {
+  var pl = PLState.pl;
+  var role = PLState.role;
+  return '' +
+    '<div class="topbar-seg"><span class="switch-label">产品线</span>' +
+    '<div class="seg seg-pl" id="pl-switch">' +
+    '<button data-pl="both" class="' + (pl === 'both' ? 'on' : '') + '">全部</button>' +
+    '<button data-pl="bird" class="' + (pl === 'bird' ? 'on' : '') + '">🐦 观鸟</button>' +
+    '<button data-pl="hunt" class="' + (pl === 'hunt' ? 'on' : '') + '">🦌 狩猎</button>' +
+    '</div></div>' +
+    '<div class="topbar-seg"><span class="switch-label">区域</span>' +
+    '<div class="seg" id="region-switch">' +
+    '<button data-region="all" class="' + (PLState.region === 'all' ? 'on' : '') + '">全部</button>' +
+    '<button data-region="na" class="' + (PLState.region === 'na' ? 'on' : '') + '">北美</button>' +
+    '<button data-region="eu" class="' + (PLState.region === 'eu' ? 'on' : '') + '">欧洲</button>' +
+    '</div></div>' +
+    '<div class="topbar-seg role-switch"><span class="switch-label">角色</span>' +
+    '<div class="seg" id="role-switch">' +
+    '<button data-role="operator" class="' + (role === 'operator' ? 'on' : '') + '">运营</button>' +
+    '<button data-role="approver" class="' + (role === 'approver' ? 'on' : '') + '">审批人</button>' +
+    '<button data-role="admin" class="' + (role === 'admin' ? 'on' : '') + '">管理员</button>' +
+    '</div></div>';
+}
+
+/** 页面入口：注入壳。opts: {title, prd, demo:{points[], path[]}, noApproval} */
+PL.shell = function (opts) {
+  var path = location.pathname.split('/').pop() || 'index.html';
+  var html = '<div class="layout">' +
+    '<aside class="sidebar" id="sidebar">' + renderSidebar(path) + '</aside>' +
+    '<div class="main">' +
+    '<div class="topbar">' +
+    '<div class="page-title">' + opts.title + (opts.prd ? '<span class="prd-ref">PRD §' + opts.prd + '</span>' : '') + '</div>' +
+    topbarSegs() +
+    '<button class="demo-btn" id="demo-btn">💡 演示说明</button>' +
+    '</div>' +
+    '<div class="content" id="content">' +
+    '<div id="approval-anchor"></div>' +
+    '</div>' +
+    '</div></div>' +
+    '<div id="toast-root"></div>';
+  document.body.innerHTML = html;
+
+  /* 切换器事件 */
+  document.getElementById('pl-switch').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    PLState.pl = b.dataset.pl;
+    document.querySelectorAll('#pl-switch button').forEach(function (x) { x.classList.toggle('on', x === b); });
+    document.dispatchEvent(new CustomEvent('pl-change'));
+    PL.toast('已切换产品线：' + (PLState.pl === 'both' ? '全部' : PLState.pl === 'bird' ? '观鸟线' : '狩猎线'), 'ok');
+  });
+  document.getElementById('region-switch').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    PLState.region = b.dataset.region;
+    document.querySelectorAll('#region-switch button').forEach(function (x) { x.classList.toggle('on', x === b); });
+    PL.toast('区域：' + (PLState.region === 'all' ? '全部' : PLState.region === 'na' ? '北美' : '欧洲'));
+  });
+  document.getElementById('role-switch').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    PLState.role = b.dataset.role;
+    document.querySelectorAll('#role-switch button').forEach(function (x) { x.classList.toggle('on', x === b); });
+    PL.toast(PLState.role === 'approver' ? '审批人视角：待办审批面板已出现' : PLState.role === 'admin' ? '管理员视角' : '运营视角', 'ok');
+    var ev = new CustomEvent('role-change'); document.dispatchEvent(ev);
+  });
+
+  /* 演示说明 */
+  document.getElementById('demo-btn').addEventListener('click', function () { PL.demoInfo(opts.demo); });
+  if (opts.demo) PL.demoInfo(opts.demo, true);
+  return document.getElementById('content');
+};
+
+/* ---------------- Toast ---------------- */
+
+PL.toast = function (msg, type) {
+  var root = document.getElementById('toast-root');
+  if (!root) return;
+  var el = document.createElement('div');
+  el.className = 'toast ' + (type || '');
+  el.innerHTML = (type === 'ok' ? '✓ ' : type === 'err' ? '✕ ' : type === 'warn' ? '⚠ ' : '· ') + PL.esc(msg);
+  root.appendChild(el);
+  setTimeout(function () { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(function () { el.remove(); }, 320); }, 3200);
+};
+
+/* ---------------- Modal ---------------- */
+
+PL.modal = function (opts) {
+  var mask = document.createElement('div');
+  mask.className = 'modal-mask';
+  mask.innerHTML = '<div class="modal">' +
+    '<div class="modal-head">' + PL.esc(opts.title || '') +
+    '<button class="close" id="m-close">×</button></div>' +
+    '<div class="modal-body">' + opts.body + '</div>' +
+    (opts.footer ? '<div class="modal-foot">' + opts.footer + '</div>' : '') +
+    '</div>';
+  document.body.appendChild(mask);
+  function close() { mask.remove(); }
+  mask.querySelector('#m-close').addEventListener('click', close);
+  mask.addEventListener('click', function (e) { if (e.target === mask && !opts.locked) close(); });
+  return { close: close, el: mask };
+};
+
+/* ---------------- 演示说明 ---------------- */
+
+PL.demoInfo = function (demo, auto) {
+  if (!demo) return;
+  var old = document.querySelector('.demo-pop');
+  if (old) { old.remove(); return; }
+  var el = document.createElement('div');
+  el.className = 'demo-pop';
+  el.innerHTML = '<button class="demo-close">×</button>' +
+    '<span class="prd-tag">PRD §' + PL.esc(demo.prd) + '</span>' +
+    '<h4>💡 本页演示</h4>' +
+    demo.points.map(function (p) { return '<p>· ' + PL.esc(p) + '</p>'; }).join('') +
+    (demo.path ? '<p style="margin-top:8px;color:#8fa89b">▶ 建议路径：' + PL.esc(demo.path) + '</p>' : '');
+  el.querySelector('.demo-close').addEventListener('click', function () { el.remove(); });
+  document.body.appendChild(el);
+};
+
+/* ---------------- 审批面板（审批人视角） ---------------- */
+
+PL.approvalPanel = function (items) {
+  var anchor = document.getElementById('approval-anchor');
+  if (!anchor) return;
+  if (PLState.role !== 'approver') { anchor.innerHTML = ''; return; }
+  var html = '<div class="approval-panel">' +
+    '<div class="ap-head">🛂 待办审批 <span style="font-weight:400;font-size:11px;opacity:.7">（审批人视角）</span></div>';
+  items.forEach(function (it) {
+    html += '<div class="ap-item">' +
+      '<b>' + PL.esc(it.name) + '</b>' +
+      '<span class="badge badge-blue">' + PL.esc(it.type) + '</span>' +
+      '<span style="color:var(--ink-3)">' + PL.esc(it.submitter) + ' · ' + PL.esc(it.time) + '</span>' +
+      '<span class="ap-action">' +
+      '<button class="btn btn-sm btn-primary" data-approve="' + it.id + '">通过</button>' +
+      '<button class="btn btn-sm btn-danger" data-reject="' + it.id + '">驳回</button>' +
+      '</span></div>';
+  });
+  html += '</div>';
+  anchor.innerHTML = html;
+
+  anchor.querySelectorAll('[data-approve]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var it = items.find(function (x) { return x.id === b.dataset.approve; });
+      if (it.onApprove) it.onApprove();
+      PL.toast('已通过审批：' + it.name, 'ok');
+      refreshApproval();
+    });
+  });
+  anchor.querySelectorAll('[data-reject]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var it = items.find(function (x) { return x.id === b.dataset.reject; });
+      if (it.onReject) it.onReject();
+      PL.toast('已驳回：' + it.name + '（回草稿）', 'warn');
+      refreshApproval();
+    });
+  });
+  function refreshApproval() {
+    document.dispatchEvent(new CustomEvent('approval-done'));
+  }
+};
+
+/** 订阅审批面板刷新事件（页面自行处理剩余待办） */
+PL.requestApprovalRefresh = function () { /* 占位：页面监听 approval-done 更新数据 */ };
+
+</script>
+<script>
+/* 从列表带入用户（演示态：默认取第一个双机用户，否则取 U1001） */
+var qs = new URLSearchParams(location.search);
+var uid = qs.get('id') || 'U3001';
+var user = PLData.users.find(function (u) { return u.id === uid; }) || PLData.users[0];
+
+var content = PL.shell({
+  title: '用户画像 · ' + user.id,
+  prd: '6.2',
+  demo: { prd: '6.2', points: ['三个板块：用户信息 / 设备情况 / 订阅情况，操作项放右上角', '双机用户顶部 tab 切换观鸟/狩猎线，字段模板整体替换（产品线红线）', '订阅情况分三块：当前生效套餐（赠送权益带角标）/ 历史订阅 / 账号级共享权益', '设备情况展示套餐等级与周期；一设备多套餐则一行一个套餐', '命中的用户分组：名字 + 定义描述 + 分组标签', '操作区：查看订单（跳转该用户订单明细）/ 返回列表'], path: '点 U3001 看双机 tab 切换 → 点 U2004 看一设备多套餐 → 点 U1001 看赠送权益角标' }
+});
+
+/* 顶部切换器隐藏：画像页用页内产品线 tab 切换 */
+document.querySelectorAll('.topbar .topbar-seg').forEach(function (el) { el.style.display = 'none'; });
+
+/* 赠送权益角标（队列顺延生效，不并行） */
+function giftsHtml(gifts) {
+  if (!gifts || !gifts.length) return '<span style="color:var(--ink-3)">—</span>';
+  return gifts.map(function (g) {
+    return '<span class="badge badge-orange">🎁 ' + PL.esc(g.name) + '</span>' +
+      '<span style="font-size:11px;color:var(--ink-3)">' + PL.esc(g.grantedAt) + ' 赠送</span>';
+  }).join('<br>') +
+    '<div style="font-size:10.5px;color:var(--ink-3);margin-top:4px">赠送权益于订阅到期后顺延生效，不并行</div>';
+}
+
+/* 账号级共享权益（按产品线过滤） */
+function benefitsHtml(benefits, pl) {
+  var list = (benefits || []).filter(function (b) { return b.pl === pl; });
+  if (!list.length) return '<span style="font-size:12px;color:var(--ink-3)">暂无共享权益</span>';
+  return '<div>' + list.map(function (b) {
+    return '<div style="display:flex;align-items:center;gap:16px;border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:8px">' +
+      '<b style="font-size:12.5px;min-width:170px">' + PL.esc(b.name) + '</b>' +
+      '<span style="font-size:12px;color:var(--ink-2);min-width:120px">$' + PL.esc(String(b.price)) + ' · ' + PL.esc(b.period) + '</span>' +
+      '<span style="font-size:12px;color:var(--ink)">' + PL.esc(b.usage) + '</span>' +
+      '</div>';
+  }).join('') + '</div>';
+}
+
+/* 命中的用户分组：名字 + 定义描述 + 标签 */
+function packsHtml(packs) {
+  if (!packs || !packs.length) return '<span style="font-size:12px;color:var(--ink-3)">未命中任何人群包</span>';
+  return '<div>' + packs.map(function (p) {
+    var pack = PLData.audiencePacks.find(function (x) { return x.id === p; });
+    if (!pack) return '';
+    return '<div style="display:flex;align-items:flex-start;gap:12px;border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:8px">' +
+      '<span class="badge badge-blue">' + PL.esc(pack.name) + '</span>' +
+      '<span style="font-size:12px;color:var(--ink-2);flex:1">' + PL.esc(pack.desc) + '</span>' +
+      '<span>' + (pack.tags || []).map(function (t) { return '<span class="badge badge-gray">' + PL.esc(t) + '</span>'; }).join(' ') + '</span>' +
+      '</div>';
+  }).join('') + '</div>';
+}
+
+function render() {
+  var pl = PLState.pl;
+  var isBoth = user.pl === 'both';
+  var effPl = isBoth ? (pl === 'hunt' ? 'hunt' : 'bird') : user.pl;
+  var s = user.sub || {};
+
+  var html = '';
+
+  /* 产品线 tab（仅双机用户） */
+  if (isBoth) {
+    html += '<div class="tabs" style="margin-bottom:16px">' +
+      '<span class="tab' + (effPl === 'bird' ? ' on' : '') + '" data-pl="bird">🐦 观鸟线</span>' +
+      '<span class="tab' + (effPl === 'hunt' ? ' on' : '') + '" data-pl="hunt">🦌 狩猎线</span>' +
+      '<span class="hint" style="align-self:center">双机用户：两线订阅与权益独立</span>' +
+      '</div>';
+  }
+
+  /* 板块一 用户信息（操作项放右上角） */
+  html += '<div class="card"><div class="card-head"><h3>用户信息</h3>' + PL.plTag(user.pl) +
+    '<div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">' +
+    '<button class="btn btn-primary btn-sm" onclick="location.href=\'order-list.html?uid=' + encodeURIComponent(user.id) + '\'">📋 查看订单</button>' +
+    '<button class="btn btn-sm" onclick="location.href=\'users-list.html\'">← 返回列表</button>' +
+    '</div></div><div class="card-body">' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">' +
+    '<div class="form-field"><label>One-ID</label><b style="font-family:var(--mono)">' + PL.esc(user.id) + '</b></div>' +
+    '<div class="form-field"><label>邮箱</label><b>' + PL.esc(user.email) + '</b></div>' +
+    '<div class="form-field"><label>地区</label><b>' + PL.esc(user.region) + '</b></div>' +
+    '<div class="form-field"><label>注册时间</label><b>' + PL.esc(user.createdAt) + '</b></div>' +
+    '<div class="form-field"><label>最近登录时间</label><b>' + PL.esc(user.lastActive) + '</b></div>' +
+    '</div></div></div>';
+
+  /* 板块二 设备情况（按当前产品线过滤；展示套餐等级与周期，一设备多套餐多行） */
+  var devRows = [];
+  user.devices.filter(function (d) {
+    return effPl === 'bird' ? d.model === 'K3' : d.model === 'TL300';
+  }).forEach(function (d) {
+    var plTag = d.model === 'K3' ? PL.plTag('bird') : PL.plTag('hunt');
+    var bound = d.bound ? '<span class="badge badge-green">已绑定</span>' : '<span class="badge badge-red">已解绑</span>';
+    var subs = (user.subPerDevice || []).filter(function (x) { return x.sn === d.sn; });
+    if (effPl === 'bird') {
+      /* 观鸟：套餐挂账号，设备行展示账号当前套餐 */
+      devRows.push([d.model, plTag, '<span class="mono">' + d.sn + '</span>', d.activated, bound, PL.esc(s.tier || '—'), PL.esc(s.period || '—'), PL.esc(s.expireAt || '—')]);
+    } else if (subs.length) {
+      subs.forEach(function (x) {
+        devRows.push([d.model, plTag, '<span class="mono">' + d.sn + '</span>', d.activated, bound, PL.esc(x.tier), PL.esc(x.period || '—'), PL.esc(x.expireAt || '—')]);
+      });
+    } else {
+      devRows.push([d.model, plTag, '<span class="mono">' + d.sn + '</span>', d.activated, bound, '—', '—', '—']);
+    }
+  });
+
+  html += '<div class="card"><div class="card-head"><h3>设备情况</h3>' +
+    '<span class="desc">' + (effPl === 'bird' ? '观鸟线设备（K3）· 套餐挂账号' : '狩猎线设备（TL300）· 一设备多套餐一行一个') + '</span></div><div class="card-body">' +
+    PL.table(['型号', '产品线', '设备号 SN', '激活时间', '绑定状态', '当前套餐', '套餐周期', '套餐到期'], devRows) +
+    '</div></div>';
+
+  /* 板块三 订阅情况（三子块） */
+  html += '<div class="card"><div class="card-head"><h3>订阅情况</h3>' +
+    '<span class="desc">' + (effPl === 'bird' ? '观鸟线 · 权益挂账号（账号级）' : '狩猎线 · 权益绑单台设备（设备级）') + '</span></div><div class="card-body">';
+
+  if (effPl === 'bird') {
+    /* 3.1 当前生效套餐（账号级，一行一个套餐） */
+    html += '<div class="form-section"><h4>当前生效套餐</h4>' + PL.table(
+      ['型号', '当前套餐名称', '周期', '购买时间', '自动续费', '队列中的赠送权益'],
+      [[
+        'K3',
+        PL.esc(s.tier || '—') + (s.trial && s.trial !== '—' ? ' <span class="badge badge-blue">' + PL.esc(s.trial) + '</span>' : ''),
+        PL.esc(s.period || '—'),
+        PL.esc(s.purchaseAt || '—'),
+        PL.boolBadge(s.autoRenew),
+        giftsHtml(s.gifts)
+      ]]
+    ) + '</div>';
+
+    /* 3.2 历史订阅情况（观鸟无设备号列） */
+    var hist = (user.subHistory || []).filter(function (h) { return h.pl === 'bird'; });
+    html += '<div class="form-section"><h4>历史订阅情况</h4>' + PL.table(
+      ['型号', '套餐档位', '周期', '购买时间'],
+      hist.map(function (h) { return [h.model || 'K3', PL.esc(h.tier), PL.esc(h.period), PL.esc(h.purchasedAt)]; }),
+      { emptyText: '暂无历史订阅' }
+    ) + '</div>';
+
+    /* 3.3 账号级共享权益（观鸟加油包） */
+    html += '<div class="form-section"><h4>账号级共享权益</h4>' + benefitsHtml(user.accountBenefits, 'bird') + '</div>';
+  } else {
+    /* 3.1 当前生效套餐（设备级，一行一个套餐） */
+    html += '<div class="form-section"><h4>当前生效套餐</h4>' + PL.table(
+      ['型号', '设备号', '当前套餐名称', '周期', '购买时间', '队列中的赠送权益'],
+      (user.subPerDevice || []).map(function (d) {
+        return [
+          'TL300',
+          '<span class="mono">' + d.sn + '</span>',
+          PL.esc(d.tier) + (d.expStatus && d.expStatus.indexOf('体验') >= 0 ? ' <span class="badge badge-blue">' + PL.esc(d.expStatus) + '</span>' : ''),
+          PL.esc(d.period || '—'),
+          PL.esc(d.purchaseAt || '—'),
+          giftsHtml(d.gifts)
+        ];
+      }),
+      { emptyText: '暂无生效套餐' }
+    ) + '</div>';
+
+    /* 3.2 历史订阅情况（狩猎含设备号列） */
+    var hist2 = (user.subHistory || []).filter(function (h) { return h.pl === 'hunt'; });
+    html += '<div class="form-section"><h4>历史订阅情况</h4>' + PL.table(
+      ['型号', '设备号', '套餐档位', '周期', '购买时间'],
+      hist2.map(function (h) { return [h.model || 'TL300', '<span class="mono">' + PL.esc(h.sn) + '</span>', PL.esc(h.tier), PL.esc(h.period), PL.esc(h.purchasedAt)]; }),
+      { emptyText: '暂无历史订阅' }
+    ) + '</div>';
+
+    /* 3.3 账号级共享权益（狩猎 AI 权益包 / 加油包） */
+    html += '<div class="form-section"><h4>账号级共享权益</h4>' + benefitsHtml(user.accountBenefits, 'hunt') + '</div>';
+  }
+  html += '</div></div>';
+
+  /* 板块四 命中的用户分组 */
+  html += '<div class="card"><div class="card-head"><h3>命中的用户分组</h3></div><div class="card-body">' +
+    packsHtml(user.packs) + '</div></div>';
+
+  content.innerHTML = html;
+
+  /* 产品线 tab 点击（双机用户） */
+  document.querySelectorAll('.tabs .tab[data-pl]').forEach(function (t) {
+    t.addEventListener('click', function () {
+      if (PLState.pl === t.dataset.pl) return;
+      PLState.pl = t.dataset.pl;
+      render();
+    });
+  });
+}
+
+document.addEventListener('pl-change', render);
+render();
+</script>
+</body>
+</html>

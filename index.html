@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parallens 用户运营后台 · 原型合集</title>
+<style>
+  :root { --bg:#f2f5f9; --card:#fff; --line:#e3e8ef; --ink:#0f172a; --ink2:#475569; --ink3:#8a97a8; --hunt:#b45309; --hunt-soft:#ffedd5; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif; background:var(--bg); color:var(--ink); line-height:1.7; }
+  .wrap { max-width:1080px; margin:0 auto; padding:36px 24px 64px; }
+  .hero { background:linear-gradient(135deg,#0c1424,#16233f); color:#e8edf5; border-radius:18px; padding:30px 32px; margin-bottom:22px; }
+  .hero h1 { margin:0 0 6px; font-size:24px; letter-spacing:-.2px; }
+  .hero p { margin:0; color:#b6c2d4; font-size:13px; max-width:760px; }
+  .hero .pill { display:inline-flex; margin-top:12px; background:rgba(29,78,216,.35); border:1px solid rgba(96,165,250,.35); color:#bfdbfe; border-radius:999px; padding:3px 12px; font-size:11.5px; }
+  h2 { font-size:16px; margin:26px 0 12px; }
+  h2 .tag { font-size:10.5px; color:var(--ink3); font-weight:600; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; text-decoration:none; color:var(--ink); display:block; transition:all .15s; box-shadow:0 1px 2px rgba(15,23,42,.05); }
+  .card:hover { border-color:#9db8e8; box-shadow:0 10px 24px -14px rgba(29,78,216,.35); transform:translateY(-1px); }
+  .card b { font-size:13.5px; }
+  .card .star { display:inline-block; font-size:10px; background:var(--hunt-soft); color:var(--hunt); border-radius:4px; padding:1px 6px; margin-left:6px; font-weight:700; vertical-align:2px; }
+  .card .note { font-size:11.5px; color:var(--ink3); margin-top:3px; }
+  .extra { margin-top:22px; display:flex; gap:10px; flex-wrap:wrap; }
+  .extra a { display:inline-flex; align-items:center; gap:6px; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:9px 14px; text-decoration:none; color:var(--ink); font-size:12.5px; }
+  .extra a:hover { border-color:#9db8e8; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>Parallens 用户运营后台 · 原型合集</h1>
+    <p>策略编辑器为可点击原型（六步向导 + 渠道差异化配置 + 事件/定时/周期触发方式）。全部为演示数据（mock），状态存内存、刷新即重置。</p>
+    <span class="pill">解压后双击本文件即可开始浏览</span>
+  </div>
+
+  <h2>👥 用户管理 <span class="tag">PRD §5</span></h2>
+  <div class="grid">
+    <a class="card" href="users-list.html"><b>用户列表</b><div class="note">产品线切换动态换列模板 · 多线索搜索 · 导出</div></a>
+    <a class="card" href="user-detail.html"><b>用户画像</b><div class="note">360° 档案 · 双机用户切换 · 赠送权益角标</div></a>
+    <a class="card" href="audience-builder.html"><b>人群包编辑器</b><span class="star">编辑器</span><div class="note">条件树 + 预估人数 + 循环引用拦截</div></a>
+  </div>
+
+  <h2>💰 商业化 <span class="tag">PRD §6</span></h2>
+  <div class="grid">
+    <a class="card" href="plans-list.html"><b>套餐列表</b><div class="note">两线 Tab + 限定套餐 + 上下架状态机</div></a>
+    <a class="card" href="plan-editor.html"><b>套餐编辑器</b><span class="star">编辑器</span><div class="note">两线区块显隐 + 多语言 + 内购映射</div></a>
+    <a class="card" href="benefit-list.html"><b>权益下发列表</b><div class="note">任务状态流转 · 优惠券/兑换码/直发</div></a>
+    <a class="card" href="benefit-editor.html"><b>权益下发向导</b><span class="star">编辑器</span><div class="note">七步向导 + 归属类型（账号级/设备级）</div></a>
+    <a class="card" href="order-list.html"><b>订单查询</b><div class="note">订阅/兑换码核销/优惠券核销/赠送统一查询</div></a>
+  </div>
+
+  <h2>📢 策略触达 <span class="tag">PRD §7</span></h2>
+  <div class="grid">
+    <a class="card" href="strategy-list.html"><b>策略列表</b><div class="note">名称/区域/用户组合引用/渠道/状态/创建时间</div></a>
+    <a class="card" href="prototype-strategy.html#editor"><b>策略编辑器</b><span class="star">编辑器</span><div class="note">六步向导 · 渠道差异化配置 · 事件/定时/周期触发方式 · 预览发布</div></a>
+    <a class="card" href="frequency.html"><b>全局频控</b><div class="note">跨渠道上限 · 优先级 · 免打扰 · 今日发送量</div></a>
+  </div>
+
+  <div class="extra"><a href="打开说明.txt">📄 打开说明</a></div>
+</div>
+</body>
+</html>

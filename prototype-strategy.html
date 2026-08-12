@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>策略触达 · 可点击原型 · Parallens 用户运营后台</title>
+<link rel="icon" href="data:,">
+<style>
+/* ============================================================
+   Parallens 用户运营后台 · 设计 token 与组件样式 v0.1
+   通用后台风：precision utility / 浅色、高信息密度、克制动效
+   ============================================================ */
+:root {
+  --bg: #f2f5f9;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --surface-3: #eef2f7;
+  --border: #e3e8ef;
+  --border-strong: #c9d3df;
+  --text: #0f172a;
+  --text-2: #475569;
+  --text-3: #8a97a8;
+  --accent: #1d4ed8;
+  --accent-hover: #1e40af;
+  --accent-weak: #dbeafe;
+  --accent-ink: #1e3a8a;
+  --sidebar: #0c1424;
+  --sidebar-2: #101b31;
+  --sidebar-text: #b6c2d4;
+  --sidebar-muted: #64748b;
+  --success: #15803d;  --success-bg: #dcfce7;
+  --warning: #b45309;  --warning-bg: #fef3c7;
+  --danger:  #b91c1c;  --danger-bg: #fee2e2;
+  --purple:  #6d28d9;  --purple-bg: #ede9fe;
+  --cyan:    #0e7490;  --cyan-bg: #cffafe;
+  --bird:    #0f766e;  --bird-bg: #ccfbf1;
+  --hunt:    #b45309;  --hunt-bg: #ffedd5;
+  --radius: 10px;
+  --radius-sm: 7px;
+  --shadow: 0 1px 2px rgba(15,23,42,.05), 0 10px 28px -18px rgba(15,23,42,.18);
+  --mono: "SF Mono", ui-monospace, "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text);
+  background:
+    radial-gradient(1200px 500px at 85% -10%, rgba(29,78,216,.045), transparent 60%),
+    var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: #bfdbfe; }
+
+/* ---------- 应用骨架 ---------- */
+.app { display: grid; grid-template-columns: 224px minmax(0,1fr); min-height: 100vh; }
+.sidebar {
+  background: linear-gradient(180deg, var(--sidebar) 0%, var(--sidebar-2) 100%);
+  color: var(--sidebar-text);
+  padding: 18px 12px;
+  position: sticky; top: 0; height: 100vh;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 16px; }
+.brand-mark {
+  width: 30px; height: 30px; border-radius: 9px;
+  background: linear-gradient(135deg, #2563eb, #38bdf8);
+  display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 14px;
+  box-shadow: 0 6px 14px -6px rgba(37,99,235,.6);
+}
+.brand-name { font-size: 14px; font-weight: 700; color: #f1f5f9; letter-spacing: .2px; }
+.brand-sub { font-size: 10px; color: var(--sidebar-muted); margin-top: 1px; }
+.nav-group { font-size: 10px; letter-spacing: .12em; color: var(--sidebar-muted); padding: 14px 10px 6px; text-transform: uppercase; }
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 10px; border-radius: 8px; color: var(--sidebar-text);
+  font-size: 12.5px; cursor: pointer; text-decoration: none;
+}
+.nav-item:hover { background: rgba(255,255,255,.06); color: #e2e8f0; }
+.nav-item.active { background: var(--accent); color: #fff; box-shadow: 0 6px 14px -8px rgba(37,99,235,.8); }
+.nav-item.soon { opacity: .45; cursor: not-allowed; }
+.nav-ico { width: 15px; height: 15px; display: inline-grid; place-items: center; font-size: 13px; }
+.nav-item.active .nav-ico, .nav-item:hover .nav-ico { opacity: 1; }
+
+.main { min-width: 0; display: flex; flex-direction: column; }
+.topbar {
+  height: 56px; background: rgba(255,255,255,.86); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; position: sticky; top: 0; z-index: 30;
+}
+.crumb { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-3); }
+.crumb b { color: var(--text); font-weight: 600; }
+.top-actions { display: flex; align-items: center; gap: 10px; }
+.content { padding: 22px 24px 48px; max-width: 1440px; width: 100%; margin: 0 auto; }
+
+/* ---------- 通用组件 ---------- */
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+.page-title { font-size: 20px; font-weight: 750; letter-spacing: -.2px; margin: 0; }
+.page-desc { color: var(--text-2); font-size: 12.5px; margin-top: 3px; }
+.prd-ref {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--accent-ink); background: var(--accent-weak);
+  border-radius: 999px; padding: 2px 9px; font-weight: 600;
+}
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+.card + .card { margin-top: 14px; }
+.card-pad { padding: 16px 18px; }
+.card-title { font-size: 13.5px; font-weight: 700; margin: 0 0 2px; }
+.card-sub { font-size: 11.5px; color: var(--text-3); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid var(--border-strong); background: var(--surface); color: var(--text);
+  font: inherit; font-size: 12.5px; font-weight: 600;
+  border-radius: 8px; padding: 7px 13px; cursor: pointer; transition: .15s ease;
+  text-decoration: none; white-space: nowrap;
+}
+.btn:hover { border-color: #9fb0c5; background: var(--surface-2); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-danger { color: var(--danger); border-color: #f4c4c4; }
+.btn-danger:hover { background: var(--danger-bg); border-color: var(--danger); }
+.btn-ghost { border-color: transparent; background: transparent; color: var(--text-2); }
+.btn-ghost:hover { background: var(--surface-3); color: var(--text); }
+.btn-sm { padding: 4px 9px; font-size: 11.5px; border-radius: 7px; }
+
+.icon-btn { width: 28px; height: 28px; display: inline-grid; place-items: center; border-radius: 7px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; color: var(--text-2); }
+.icon-btn:hover { background: var(--surface-2); color: var(--text); }
+
+/* segmented tabs */
+.seg { display: inline-flex; background: var(--surface-3); border: 1px solid var(--border); border-radius: 9px; padding: 3px; gap: 2px; }
+.seg button {
+  border: 0; background: transparent; font: inherit; font-size: 12px; font-weight: 600;
+  color: var(--text-2); padding: 5px 12px; border-radius: 7px; cursor: pointer;
+}
+.seg button.on { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(15,23,42,.14); }
+
+/* filters */
+.filters { display: grid; gap: 12px; }
+.filter-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 130px; }
+.field.wide { min-width: 210px; }
+.field label { font-size: 11px; color: var(--text-2); font-weight: 600; }
+.input, select.input, textarea.input {
+  font: inherit; font-size: 12.5px; color: var(--text);
+  border: 1px solid var(--border-strong); border-radius: 8px; padding: 6px 9px;
+  background: var(--surface); outline: none; transition: border .15s, box-shadow .15s;
+}
+.input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(29,78,216,.12); }
+select.input { cursor: pointer; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  border: 1px solid var(--border-strong); background: var(--surface); color: var(--text-2);
+  font-size: 11.5px; border-radius: 999px; padding: 3px 10px; cursor: pointer; user-select: none;
+}
+.chip.on { border-color: var(--accent); background: var(--accent-weak); color: var(--accent-ink); font-weight: 600; }
+
+/* table */
+.tbl-wrap { overflow-x: auto; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.tbl th {
+  text-align: left; font-size: 11px; font-weight: 650; color: var(--text-3);
+  background: var(--surface-2); border-bottom: 1px solid var(--border);
+  padding: 9px 12px; white-space: nowrap; letter-spacing: .02em;
+}
+.tbl td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.tbl tbody tr { transition: background .12s; }
+.tbl tbody tr:hover { background: #f7faff; }
+.tbl tbody tr.selected { background: #eef4ff; }
+.tbl .rowlink { cursor: pointer; }
+.mono { font-family: var(--mono); font-size: 11.5px; letter-spacing: -.1px; }
+.cell-main { font-weight: 600; color: var(--text); }
+.cell-sub { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+.tbl-footer { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; color: var(--text-3); font-size: 11.5px; }
+.pager { display: flex; align-items: center; gap: 5px; }
+.pager button { min-width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); font: inherit; font-size: 11.5px; cursor: pointer; color: var(--text-2); }
+.pager button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.pager button:disabled { opacity: .4; cursor: not-allowed; }
+
+/* badges & tags */
+.badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; font-size: 11px; font-weight: 650; padding: 2px 9px; white-space: nowrap; }
+.badge::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.badge.bird { color: var(--bird); background: var(--bird-bg); }
+.badge.hunt { color: var(--hunt); background: var(--hunt-bg); }
+.badge.ok   { color: var(--success); background: var(--success-bg); }
+.badge.warn { color: var(--warning); background: var(--warning-bg); }
+.badge.bad  { color: var(--danger); background: var(--danger-bg); }
+.badge.info { color: var(--cyan); background: var(--cyan-bg); }
+.badge.neutral { color: var(--text-2); background: var(--surface-3); }
+.badge.plain::before { display: none; }
+.tag { display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; font-size: 11px; font-weight: 600; padding: 2px 8px; }
+.tag.blue { color: #1e40af; background: #dbeafe; }
+.tag.green { color: #166534; background: #dcfce7; }
+.tag.orange { color: #9a3412; background: #ffedd5; }
+.tag.purple { color: #5b21b6; background: #ede9fe; }
+.tag.cyan { color: #155e75; background: #cffafe; }
+.tag.gray { color: #475569; background: #e2e8f0; }
+.tag.amber { color: #92400e; background: #fef3c7; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 5px; }
+
+/* batch bar */
+.batchbar {
+  position: sticky; bottom: 14px; margin: 12px auto 0; width: fit-content; max-width: calc(100% - 40px);
+  background: #0f172a; color: #e2e8f0; border-radius: 12px; box-shadow: 0 18px 40px -12px rgba(15,23,42,.45);
+  display: flex; align-items: center; gap: 14px; padding: 9px 14px; font-size: 12.5px; z-index: 20;
+}
+.batchbar b { color: #fff; }
+
+/* modal & drawer */
+.overlay { position: fixed; inset: 0; background: rgba(15,23,42,.4); z-index: 60; display: grid; place-items: center; }
+.modal { width: min(520px, calc(100vw - 40px)); background: var(--surface); border-radius: 14px; box-shadow: 0 24px 60px -18px rgba(15,23,42,.4); overflow: hidden; }
+.modal-head { padding: 16px 18px 0; display: flex; justify-content: space-between; align-items: center; }
+.modal-body { padding: 14px 18px 18px; }
+.modal-foot { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; background: var(--surface-2); }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(400px, 90vw); background: var(--surface); z-index: 70; box-shadow: -18px 0 50px -20px rgba(15,23,42,.35); display: flex; flex-direction: column; }
+.drawer-head { padding: 16px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.drawer-body { padding: 16px 18px; overflow: auto; flex: 1; }
+.drawer-foot { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+
+/* toast */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(16px);
+  background: #0f172a; color: #fff; padding: 9px 16px; border-radius: 10px; font-size: 12.5px;
+  box-shadow: 0 14px 34px -12px rgba(15,23,42,.5); opacity: 0; pointer-events: none; transition: .25s ease; z-index: 90;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* tabs (页面内切换) */
+.ptabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+.ptabs button { border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--text-2); padding: 8px 13px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.ptabs button.on { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* 3-pane editor */
+.editor-grid { display: grid; grid-template-columns: 264px minmax(0,1fr) 300px; gap: 14px; align-items: start; }
+.pane { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+.pane-head { padding: 12px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.pane-head h3 { margin: 0; font-size: 13px; font-weight: 700; }
+.pane-body { padding: 12px 14px; }
+
+.cond-row {
+  border: 1px solid var(--border); border-radius: 9px; padding: 10px; margin-bottom: 8px; background: var(--surface-2);
+  display: grid; grid-template-columns: 52px 1fr 1fr 1fr 22px; gap: 7px; align-items: center;
+}
+.cond-row select { font-size: 11.5px; padding: 5px 6px; }
+.cond-andor { font-size: 10.5px; font-weight: 700; color: var(--accent-ink); background: var(--accent-weak); border-radius: 6px; padding: 3px 0; text-align: center; border: 0; cursor: pointer; }
+.cond-remove { border: 0; background: none; color: var(--text-3); cursor: pointer; font-size: 15px; }
+
+.steps { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--text-3); }
+.steps .step { display: flex; align-items: center; gap: 6px; }
+.steps .num { width: 18px; height: 18px; border-radius: 50%; background: var(--surface-3); display: grid; place-items: center; font-size: 10.5px; font-weight: 700; }
+.steps .step.on { color: var(--accent-ink); font-weight: 700; }
+.steps .step.on .num { background: var(--accent); color: #fff; }
+.steps .bar { width: 26px; height: 1px; background: var(--border-strong); }
+
+.hitcard { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--border); background: linear-gradient(90deg, #eff6ff, transparent); }
+.hitcard .num { font-size: 26px; font-weight: 800; letter-spacing: -.5px; color: var(--accent); font-variant-numeric: tabular-nums; }
+.hitcard .lab { font-size: 11.5px; color: var(--text-2); }
+
+.check { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
+
+.note { font-size: 11px; color: var(--text-3); background: var(--surface-3); border-radius: 8px; padding: 7px 9px; margin-top: 8px; line-height: 1.55; }
+.wizard { max-width: 980px; margin: 0 auto; }
+.wizard-step { display: none; }
+.wizard-step.on { display: block; }
+.wizard-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
+.radio-card { border: 1px solid var(--border); border-radius: 9px; padding: 10px 12px; cursor: pointer; display: flex; gap: 9px; align-items: flex-start; }
+.radio-card.on { border-color: var(--accent); background: #f5f8ff; }
+.radio-card input { margin-top: 3px; accent-color: var(--accent); }
+
+/* 画廊 */
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 18px; }
+.gallery-card { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
+.gallery-card iframe { width: 100%; height: 540px; border: 0; background: #fff; }
+.gallery-meta { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.gallery-meta h3 { margin: 0; font-size: 13.5px; }
+.gallery-meta p { margin: 2px 0 0; font-size: 11.5px; color: var(--text-3); }
+
+/* 说明抽屉 */
+.rule-list { margin: 0; padding-left: 16px; font-size: 12px; color: var(--text-2); line-height: 1.8; }
+.rule-list li + li { margin-top: 4px; }
+.kv { display: grid; grid-template-columns: 78px 1fr; gap: 4px 10px; font-size: 12px; }
+.kv dt { color: var(--text-3); }
+.kv dd { margin: 0; color: var(--text); }
+
+@media (max-width: 1180px) {
+  .editor-grid { grid-template-columns: 1fr; }
+  .cond-row { grid-template-columns: 52px 1fr 1fr 1fr 22px; }
+}
+@media (max-width: 900px) {
+  .app { grid-template-columns: 64px minmax(0,1fr); }
+  .sidebar { padding: 12px 8px; }
+  .brand-name, .brand-sub, .nav-group, .nav-item span { display: none; }
+  .nav-item { justify-content: center; }
+  .content { padding: 16px 14px 48px; }
+}
+
+</style>
+<style>
+  .view { display:none; } .view.on { display:block; }
+  .crumb a { color:var(--text-3); text-decoration:none; } .crumb a:hover { color:var(--accent); }
+  .wizard-step { display:none; } .wizard-step.on { display:block; }
+  .wizard-nav { display:flex; justify-content:space-between; margin-top:16px; }
+  .ch-tag { display:inline-flex; gap:5px; align-items:center; font-size:11px; font-weight:650; border-radius:6px; padding:2px 8px; }
+  .ch-pop { color:#1e40af; background:#dbeafe; } .ch-push { color:#166534; background:#dcfce7; }
+  .ch-banner { color:#7c3aed; background:#ede9fe; } .ch-inbox { color:#155e75; background:#cffafe; }
+  .lang-row { display:flex; gap:10px; align-items:center; margin-bottom:10px; }
+  .lang-row .lang { width:64px; font-size:11.5px; font-weight:700; color:var(--text-2); }
+  .ch-preview { border:1px solid var(--border); border-radius:10px; background:#fff; padding:14px; min-height:130px; display:grid; place-items:center; color:var(--text-3); font-size:12px; }
+  .pop-card { width:100%; max-width:360px; border:1px solid var(--border-strong); border-radius:12px; box-shadow:var(--shadow); padding:16px; background:var(--surface); color:var(--text); text-align:left; }
+  .push-line { width:100%; background:var(--surface-3); border-radius:8px; padding:10px 12px; color:var(--text); text-align:left; }
+  .banner-line { width:100%; background:linear-gradient(90deg,#1d4ed8,#38bdf8); color:#fff; border-radius:10px; padding:18px; text-align:left; }
+  .inbox-line { width:100%; border:1px solid var(--border); border-radius:8px; padding:10px 12px; text-align:left; }
+  .warn-inline { display:flex; gap:8px; align-items:flex-start; background:var(--warning-bg); color:#92400e; border:1px solid #fde68a; border-radius:8px; padding:8px 10px; font-size:11.5px; margin-top:10px; }
+  .cfg-sec { border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-top:10px; }
+  .cfg-sec h4 { margin:0 0 10px; font-size:12.5px; color:var(--accent-ink); }
+  .cfg-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .cfg-grid .full { grid-column:1/-1; }
+  .btn-fields { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+  .rule-card { display:flex; gap:14px; align-items:flex-start; padding:16px 18px; }
+  .rule-card + .rule-card { border-top:1px solid var(--border); }
+  .prio-item { display:flex; align-items:center; gap:10px; background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:12.5px; margin-bottom:6px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">P</div><div><div class="brand-name">Parallens 运营后台</div><div class="brand-sub">User Operations Console</div></div></div>
+    <div class="nav-group">总览</div>
+    <a class="nav-item" href="#"><span class="nav-ico">▦</span><span>工作台</span></a>
+    <div class="nav-group">运营</div>
+    <a class="nav-item" href="#"><span class="nav-ico">◎</span><span>用户管理</span></a>
+    <a class="nav-item" href="#"><span class="nav-ico">▤</span><span>商业化</span></a>
+    <a class="nav-item active" href="#strategies"><span class="nav-ico">➤</span><span>策略触达</span></a>
+    <div class="nav-group">支撑</div>
+    <a class="nav-item soon" href="#"><span class="nav-ico">⌁</span><span>设备管理</span></a>
+    <a class="nav-item soon" href="#"><span class="nav-ico">◧</span><span>数据看板</span></a>
+    <a class="nav-item soon" href="#"><span class="nav-ico">⚙</span><span>系统设置</span></a>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb" id="crumb"></div>
+      <div class="top-actions"><span class="prd-ref">策略触达原型 · PRD §7</span><a class="btn" href="index.html">返回合集首页</a><button class="btn btn-ghost" id="btn-note">设计说明</button></div>
+    </header>
+
+    <div class="content">
+      <div class="seg" id="st-tabs" style="margin-bottom:14px">
+        <button class="on" data-view="strategies">策略配置</button>
+        <button data-view="freq">全局频控</button>
+      </div>
+
+      <!-- 策略列表 -->
+      <section class="view on" id="view-strategies">
+        <div class="page-head">
+          <div><h1 class="page-title">策略配置</h1><div class="page-desc">一次触达只选择一个渠道下发</div></div>
+          <div class="top-actions"><button class="btn btn-primary" id="btn-new">新建策略</button></div>
+        </div>
+        <div class="ptabs" id="ch-tabs">
+          <button class="on" data-ch="all">全部</button><button data-ch="pop">App 弹窗</button><button data-ch="push">Push</button><button data-ch="banner">Banner</button><button data-ch="inbox">站内信</button>
+        </div>
+        <section class="card"><div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>名称</th><th>区域</th><th>用户组合引用</th><th>产品线</th><th>渠道</th><th>状态</th><th>创建时间</th><th style="width:150px">操作</th></tr></thead>
+          <tbody id="str-rows"></tbody>
+        </table></div></section>
+      </section>
+
+      <!-- 策略编辑器 -->
+      <section class="view" id="view-editor">
+        <div class="wizard">
+          <div class="page-head">
+            <div><h1 class="page-title">策略编辑器</h1><div class="page-desc">第一步选渠道，第二步按渠道差异化配置内容与文案</div></div>
+            <div class="steps" id="wsteps" style="flex-wrap:wrap">
+              <span class="step on" data-step="0"><span class="num">1</span>基础信息</span><span class="bar"></span>
+              <span class="step" data-step="1"><span class="num">2</span>内容与文案</span><span class="bar"></span>
+              <span class="step" data-step="2"><span class="num">3</span>人群</span><span class="bar"></span>
+              <span class="step" data-step="3"><span class="num">4</span>触发方式</span><span class="bar"></span>
+              <span class="step" data-step="4"><span class="num">5</span>频控</span><span class="bar"></span>
+              <span class="step" data-step="5"><span class="num">6</span>预览与发布</span>
+            </div>
+          </div>
+          <section class="card card-pad wizard-step on" data-wstep="0">
+            <h3 style="margin:0 0 10px">基础信息</h3>
+            <div class="field" style="margin-bottom:12px"><label>策略名称 *</label><input class="input" id="s-name" placeholder="如：新手体验第 7 天引导弹窗"></div>
+            <div class="field" style="margin-bottom:12px"><label>产品线</label>
+              <div style="display:flex;gap:10px">
+                <label class="radio-card on" style="flex:1"><input type="radio" name="s-line" value="bird" checked><span><b>观鸟线</b><br><span class="card-sub">K3 · 账号级</span></span></label>
+                <label class="radio-card" style="flex:1"><input type="radio" name="s-line" value="hunt"><span><b>狩猎线</b><br><span class="card-sub">TL300 · 设备级</span></span></label>
+              </div>
+            </div>
+            <div class="field" style="margin-bottom:12px"><label>渠道（一次触达仅选择一个渠道）</label>
+              <div style="display:flex;gap:8px">
+                <label class="radio-card on" style="flex:1"><input type="radio" name="s-ch" value="pop" checked><span><b>App 弹窗</b></span></label>
+                <label class="radio-card" style="flex:1"><input type="radio" name="s-ch" value="push"><span><b>Push</b></span></label>
+                <label class="radio-card" style="flex:1"><input type="radio" name="s-ch" value="banner"><span><b>Banner</b></span></label>
+                <label class="radio-card" style="flex:1"><input type="radio" name="s-ch" value="inbox"><span><b>站内信</b></span></label>
+              </div>
+            </div>
+            <div class="chips"><span class="chip on">北美</span><span class="chip">欧洲</span><span class="chip">全量</span></div>
+          </section>
+          <section class="card card-pad wizard-step" data-wstep="1">
+            <h3 style="margin:0 0 10px">内容与文案</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch">
+              <div>
+                <h4 style="margin:0 0 10px;font-size:12.5px;color:var(--text-2)">多语言文案</h4>
+                <div class="lang-row"><span class="lang">EN（必填）</span><input class="input" id="txt-en" style="flex:1" value="Your 7-day trial is halfway! Upgrade to Pro and keep every moment."></div>
+                <div class="lang-row"><span class="lang">DE</span><input class="input" id="txt-de" style="flex:1" placeholder="未配置则回退英语"></div>
+                <div class="lang-row"><span class="lang">FR</span><input class="input" id="txt-fr" style="flex:1" placeholder="未配置则回退英语"></div>
+                <div class="field" style="margin-bottom:10px"><label>配图</label><button class="btn">上传图片</button></div>
+                <div class="field"><label>跳转链接</label><input class="input" id="txt-link" value="parallens://upgrade"></div>
+              </div>
+              <div>
+                <div id="ch-name-box"></div>
+                <div id="cfg-pop" class="cfg-sec">
+                  <h4>App 弹窗</h4>
+                  <div class="cfg-grid">
+                    <div class="field"><label>弹窗位置</label><select class="input" id="pop-pos"><option>居中弹窗</option><option>全屏</option><option>底部浮层</option></select></div>
+                    <div class="field"><label>按钮类型</label><select class="input" id="pop-btns"><option>主次按钮</option><option>单按钮</option><option>无按钮</option></select></div>
+                  </div>
+                  <div class="btn-fields" id="pop-main-wrap">
+                    <div class="field"><label>主按钮文案 *</label><input class="input" id="pop-main" value="查看 Pro 权益"></div>
+                    <div class="field" id="pop-sec-wrap"><label>次按钮文案</label><input class="input" id="pop-sec" value="稍后再说"></div>
+                  </div>
+                  <div class="note" id="pop-none-note" hidden>无按钮模式：仅展示内容与关闭入口。</div>
+                </div>
+                <div id="cfg-push" class="cfg-sec" hidden>
+                  <h4>Push</h4>
+                  <div class="cfg-grid">
+                    <div class="field full"><label>Push 标题 *</label><input class="input" id="push-title" value="试用过半，别错过 Pro"></div>
+                    <div class="field full"><label>Push 正文 *</label><input class="input" id="push-body" value="解锁无限 2.3K 原彩传输与云端识别"></div>
+                    <div class="field full"><label>点击跳转页</label><input class="input" id="push-link" value="parallens://upgrade"></div>
+                    <div class="field full"><label>角标规则</label><select class="input" id="push-badge"><option>不更新角标</option><option>消息计数 +1</option></select></div>
+                  </div>
+                </div>
+                <div id="cfg-banner" class="cfg-sec" hidden>
+                  <h4>Banner</h4>
+                  <div class="cfg-grid">
+                    <div class="field"><label>投放位置</label><select class="input" id="bnr-pos"><option>首页</option><option>探索 Tab（依赖产品架构）</option></select></div>
+                    <div class="field"><label>轮播排序</label><input class="input" id="bnr-order" value="2"></div>
+                    <div class="field"><label>上架时间</label><input class="input" id="bnr-on" type="date" value="2026-11-18"></div>
+                    <div class="field"><label>下架时间</label><input class="input" id="bnr-off" type="date" value="2026-11-30"></div>
+                  </div>
+                </div>
+                <div id="cfg-inbox" class="cfg-sec" hidden>
+                  <h4>站内信</h4>
+                  <div class="cfg-grid">
+                    <div class="field full"><label>消息中心文案 *</label><input class="input" id="inbox-text" value="试用过半，升级 Pro 解锁全部功能"></div>
+                    <div class="field full"><label>已读逻辑</label><select class="input" id="inbox-read"><option>点击即已读</option><option>打开消息中心已读</option></select></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="card card-pad wizard-step" data-wstep="2">
+            <h3 style="margin:0 0 10px">人群</h3>
+            <div class="field" style="margin-bottom:12px"><label>引用用户分组 / 全量</label><select class="input" id="s-seg"><option>seg_003 狩猎体验第10天 · 92 人</option><option>seg_002 K3 新用户试用中 · 486 人</option><option>全量用户</option></select></div>
+            <div class="hitcard" style="border:1px solid var(--border);border-radius:9px;max-width:420px"><div><div class="num" id="s-hit">92</div></div><div><div class="lab">触达人数预览</div><div class="card-sub">受全局频控与免打扰约束</div></div></div>
+          </section>
+          <!-- 4 触发方式 -->
+          <section class="card card-pad wizard-step" data-wstep="3">
+            <h3 style="margin:0 0 10px">触发方式</h3>
+            <div class="field" style="margin-bottom:12px"><label>触发方式</label>
+              <div style="display:flex;gap:10px">
+                <label class="radio-card on" style="flex:1"><input type="radio" name="s-trig" value="event" checked><span><b>事件触发</b><br><span class="card-sub">打开 App / 进入指定页 / 到期前等</span></span></label>
+                <label class="radio-card" style="flex:1"><input type="radio" name="s-trig" value="sched"><span><b>定时触发</b><br><span class="card-sub">指定时间点 / 时间段</span></span></label>
+                <label class="radio-card" style="flex:1"><input type="radio" name="s-trig" value="cycle"><span><b>周期触发</b><br><span class="card-sub">每天 / 每周 / 每月</span></span></label>
+              </div>
+            </div>
+
+            <div id="trig-event">
+              <div class="field" style="margin-bottom:12px"><label>事件</label>
+                <select class="input" id="ev-type" style="max-width:340px">
+                  <option value="open">打开 App</option>
+                  <option value="page">进入指定页</option>
+                  <option value="bind">绑定设备成功</option>
+                  <option value="expire">订阅到期前 N 天</option>
+                  <option value="trial">新手体验第 N 天</option>
+                </select>
+              </div>
+              <div id="ev-page" class="field" style="margin-bottom:12px" hidden><label>指定页面</label>
+                <select class="input" style="max-width:340px"><option>Home Tab</option><option>Gallery Tab</option><option>AI Tab</option><option>Explore Tab</option><option>Me Tab</option><option>My Plan</option></select>
+              </div>
+              <div id="ev-open" class="field" style="margin-bottom:12px" hidden><label>打开时机</label>
+                <select class="input" style="max-width:340px"><option>每次打开 App</option><option>仅每次会话首次打开</option></select>
+              </div>
+              <div id="ev-days" class="field" style="margin-bottom:12px" hidden><label id="ev-days-label">参数</label>
+                <div style="display:flex;gap:8px;align-items:center"><input class="input" id="ev-days-num" style="width:90px" value="3"> <span id="ev-days-unit">天</span></div>
+              </div>
+              <div id="ev-bind" class="note" hidden>绑定设备成功后触发，无额外参数。</div>
+            </div>
+
+            <div id="trig-sched" hidden>
+              <div class="field" style="margin-bottom:12px"><label>定时方式</label>
+                <select class="input" id="sched-mode" style="max-width:340px"><option>单次定时</option><option>时间段</option></select>
+              </div>
+              <div id="sched-single" class="field" style="margin-bottom:12px"><label>具体时间（用户本地时区）</label><input class="input" id="sched-dt" type="datetime-local" value="2026-11-18T10:00" style="max-width:340px"></div>
+              <div id="sched-range" hidden>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:500px">
+                  <div class="field"><label>开始日期</label><input class="input" id="sched-from" type="date" value="2026-11-18"></div>
+                  <div class="field"><label>结束日期</label><input class="input" id="sched-to" type="date" value="2026-11-30"></div>
+                  <div class="field"><label>每日触发时间</label><input class="input" id="sched-time" type="time" value="10:00"></div>
+                </div>
+              </div>
+              <div class="note">按用户本地时区计算；落在免打扰时段（22:00-06:00）自动顺延。</div>
+            </div>
+
+            <div id="trig-cycle" hidden>
+              <div class="field" style="margin-bottom:12px"><label>周期频率</label>
+                <select class="input" id="cyc-freq" style="max-width:340px"><option>每天</option><option>每周</option><option>每月</option></select>
+              </div>
+              <div id="cyc-day" class="field" style="margin-bottom:12px"><label>触发时间</label><input class="input" type="time" value="10:00" style="max-width:160px"></div>
+              <div id="cyc-week" class="field" style="margin-bottom:12px" hidden><label>星期几（可多选）</label>
+                <div class="chips" style="margin-top:5px"><span class="chip on">周一</span><span class="chip">周二</span><span class="chip">周三</span><span class="chip">周四</span><span class="chip">周五</span><span class="chip">周六</span><span class="chip">周日</span></div>
+                <div style="margin-top:8px">触发时间 <input class="input" type="time" value="10:00" style="width:140px"></div>
+              </div>
+              <div id="cyc-month" class="field" style="margin-bottom:12px" hidden><label>每月日期</label>
+                <div style="display:flex;gap:8px;align-items:center"><input class="input" type="text" style="width:90px" value="1"> 号 · 触发时间 <input class="input" type="time" value="10:00" style="width:140px"></div>
+              </div>
+              <div class="note">周期按用户本地时区计算；落在免打扰时段自动顺延。</div>
+            </div>
+          </section>          <section class="card card-pad wizard-step" data-wstep="4">
+            <h3 style="margin:0 0 10px">频控</h3>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:640px">
+              <div class="field"><label>每人限触达次数</label><input class="input" id="s-limit" value="1"> 次 / 策略</div>
+              <div class="field"><label>两次触达冷却</label><input class="input" value="7"> 天</div>
+              <div class="field"><label>策略有效期</label><input class="input" value="30"> 天</div>
+            </div>
+            <div id="freq-warn"></div>
+          </section>
+          <section class="card card-pad wizard-step" data-wstep="5">
+            <h3 style="margin:0 0 10px">预览与发布</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start">
+              <div><div class="field" style="margin-bottom:12px"><label>预览语言</label><select class="input"><option>EN</option><option>DE（回退英语）</option></select></div><div class="card-sub" style="margin-bottom:6px">预览效果</div>
+                <div class="ch-preview" id="s-preview"></div></div>
+              <div>
+                <div style="border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><b style="font-size:13px">发布确认</b><span class="card-sub">确认后直接发布，操作留日志</span></div>
+                <div class="sum-row"><span>策略</span><b id="sum-name">—</b></div>
+                <div class="sum-row"><span>渠道</span><b id="sum-ch">App 弹窗</b></div>
+                <div class="sum-row"><span>触发方式</span><b id="sum-trig">—</b></div>
+                <div class="sum-row"><span>人群</span><b>seg_003 · 92 人</b></div>
+                  <div class="sum-row"><span>频控</span><b>每人 1 次 · 冷却 7 天</b></div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <div class="wizard-nav"><button class="btn" id="btn-prev" disabled>上一步</button><div style="display:flex;gap:8px"><button class="btn" id="btn-draft">存草稿</button><button class="btn btn-primary" id="btn-next">下一步</button><button class="btn btn-primary" id="btn-pub" hidden>发布策略</button></div></div>
+        </div>
+      </section>
+
+      <!-- 全局频控 -->
+      <section class="view" id="view-freq">
+        <div class="page-head"><div><h1 class="page-title">全局频控</h1><div class="page-desc">策略发布时统一校验；保存即生效并留日志</div></div><button class="btn btn-primary" id="freq-save">保存配置</button></div>
+        <section class="card">
+          <div class="rule-card"><div class="rule-body"><h3>跨渠道触达总上限</h3><p>每用户每日全渠道触达上限。</p><div style="display:flex;align-items:center;gap:8px;margin-top:8px">每用户每日 <input class="input" id="freq-limit" style="width:80px" value="5"> 次</div></div></div>
+          <div class="rule-card"><div class="rule-body"><h3>渠道优先级</h3><div class="prio-item"><b>续费提醒</b><span class="card-sub">最高</span></div><div class="prio-item"><b>活动通知</b></div><div class="prio-item"><b>促销</b><span class="card-sub">最低</span></div></div></div>
+          <div class="rule-card"><div class="rule-body"><h3>互斥规则</h3><div style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><label class="switch" style="display:inline-flex;gap:8px;align-items:center"><input type="checkbox" checked> 订阅中用户不弹促销弹窗</label><label class="switch" style="display:inline-flex;gap:8px;align-items:center"><input type="checkbox" checked> 当天已弹窗则不 Push 同类内容</label></div></div></div>
+          <div class="rule-card"><div class="rule-body"><h3>免打扰时段</h3><p>按用户本地时区；定时触达自动顺延。</p><div style="display:flex;align-items:center;gap:8px;margin-top:8px"><input class="input" style="width:110px" type="time" value="22:00"> 至 <input class="input" style="width:110px" type="time" value="06:00"></div></div></div>
+        </section>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="overlay" id="confirm-modal" hidden>
+  <div class="modal"><div class="modal-head"><h3 style="margin:0" id="cm-title">确认操作</h3><button class="icon-btn" data-close>✕</button></div>
+    <div class="modal-body" id="cm-body">—</div>
+    <div class="modal-foot"><button class="btn" data-close>取消</button><button class="btn btn-primary" id="cm-ok">确认</button></div>
+  </div>
+</div>
+<div class="drawer" id="note-drawer" hidden>
+  <div class="drawer-head"><h3 style="margin:0">设计说明</h3><button class="icon-btn" data-close>✕</button></div>
+  <div class="drawer-body"><ul class="rule-list">
+    <li>列表字段：名称、区域、用户组合引用、产品线、渠道、状态（草稿/待发布（定时）/已发布/已停用）、创建时间。</li>
+    <li>操作规则：已发布＝查看；草稿/待发布（定时）/已停用＝编辑＋删除。</li>
+    <li>第一步：基础信息，渠道选择（App 弹窗 / Push / Banner / 站内信），一次只选一个渠道。</li>
+    <li>第二步：内容与文案＝多语言文案 + 渠道差异化配置（弹窗位置/按钮类型联动按钮文案；Push 标题正文角标；Banner 位置排序时间；站内信文案已读）。</li>
+    <li>后续：人群（人数预览）→ 触发方式 → 频控（策略级不得宽于全局）→ 预览与发布。</li>
+    <li>全局频控：≤5 次/日、优先级、互斥、免打扰 22:00-06:00（本地时区）。</li>
+  </ul></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const CRUMBS = { strategies:'策略触达 ／ <b>策略配置</b>', editor:'策略触达 ／ <a href="#strategies">策略配置</a> ／ <b>策略编辑器</b>', freq:'策略触达 ／ <b>全局频控</b>' };
+let STRS = [
+  { id:1, name:'K3 新用户欢迎弹窗', region:'北美', seg:'seg_002 K3 新用户试用中（486 人）', line:'bird', ch:'pop', status:'已发布', created:'2026-08-02' },
+  { id:2, name:'订阅到期前 3 天提醒', region:'北美 + 欧洲', seg:'seg_001 黑五高意向用户（1,284 人）', line:'bird', ch:'push', status:'已发布', created:'2026-08-03' },
+  { id:3, name:'黑五限定套餐预热 Banner', region:'北美', seg:'seg_001 黑五高意向用户（1,284 人）', line:'hunt', ch:'banner', status:'待发布（定时）', created:'2026-08-10' },
+  { id:4, name:'30 日未活跃召回站内信', region:'全量', seg:'seg_004 30 日未活跃用户（3,402 人）', line:'both', ch:'inbox', status:'草稿', created:'2026-08-11' },
+  { id:5, name:'狩猎体验结束召回 Push', region:'欧洲', seg:'seg_003 狩猎体验第10天（92 人）', line:'hunt', ch:'push', status:'已停用', created:'2026-07-28' },
+  { id:6, name:'新手体验第 7 天引导弹窗', region:'欧洲', seg:'seg_003 狩猎体验第10天（92 人）', line:'hunt', ch:'pop', status:'已发布', created:'2026-08-05' }
+];
+let chFilter = 'all', step = 0, confirmCb = null;
+const CFG = { pop:'#cfg-pop', push:'#cfg-push', banner:'#cfg-banner', inbox:'#cfg-inbox' };
+const CH_NAMES = { pop:'App 弹窗', push:'Push', banner:'Banner', inbox:'站内信' };
+function showView(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on')); $('#view-'+v).classList.add('on');
+  $('#crumb').innerHTML = CRUMBS[v]; location.hash = v;
+  document.querySelectorAll('#st-tabs button').forEach(b=>b.classList.toggle('on', b.dataset.view===v));
+  if(v==='strategies') renderStrs();
+}
+function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2400); }
+function show(el){ el.hidden=false; } function hide(el){ el.hidden=true; }
+function confirmBox(title, body, cb){ $('#cm-title').textContent=title; $('#cm-body').innerHTML=body; confirmCb=cb; show($('#confirm-modal')); }
+$('#cm-ok').addEventListener('click', () => { hide($('#confirm-modal')); if(confirmCb){ const f=confirmCb; confirmCb=null; f(); } });
+function chTag(ch){ const map={pop:['App 弹窗','ch-pop'],push:['Push','ch-push'],banner:['Banner','ch-banner'],inbox:['站内信','ch-inbox']}; const [t,c]=map[ch]; return `<span class="ch-tag ${c}">${t}</span>`; }
+function lineBadge(l){ if(l==='both') return '<span class="badge bird">观鸟</span><span class="badge hunt">狩猎</span>'; return l==='bird' ? '<span class="badge bird">观鸟</span>' : '<span class="badge hunt">狩猎</span>'; }
+function stBadge(s){ return s.includes('已发布')?'ok':s.includes('草稿')||s.includes('待发布')?'warn':'bad'; }
+function renderStrs(){
+  const rows = STRS.filter(s => chFilter==='all' || s.ch===chFilter);
+  $('#str-rows').innerHTML = rows.map(s=>`<tr data-id="${s.id}">
+    <td><span class="cell-main">${s.name}</span></td><td>${s.region}</td><td>${s.seg}</td><td>${lineBadge(s.line)}</td><td>${chTag(s.ch)}</td>
+    <td><span class="badge ${stBadge(s.status)}">${s.status}</span></td><td class="mono">${s.created}</td>
+    <td>${s.status==='已发布'
+      ? `<button class="btn btn-sm" data-view="${s.id}">查看</button>`
+      : `<button class="btn btn-sm" data-edit="${s.id}">编辑</button> <button class="btn btn-sm btn-danger" data-del="${s.id}">删除</button>`}</td></tr>`).join('');
+  $('#str-rows').querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>toast('查看策略详情与数据回收（演示）')));
+  $('#str-rows').querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ step=0; setStep(0); showView('editor'); }));
+  $('#str-rows').querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
+    const id=+b.dataset.del;
+    confirmBox('删除策略','删除后不可恢复；该操作留日志。',()=>{ STRS = STRS.filter(x=>x.id!==id); renderStrs(); toast('策略已删除（演示）'); });
+  }));
+}
+document.querySelectorAll('#ch-tabs button').forEach(b=>b.addEventListener('click',()=>{ document.querySelectorAll('#ch-tabs button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); chFilter=b.dataset.ch; renderStrs(); }));
+$('#btn-new').addEventListener('click',()=>{ step=0; setStep(0); showView('editor'); });
+
+/* 编辑器：渠道差异化内容 */
+function renderAdapt(){
+  const ch = document.querySelector('input[name="s-ch"]:checked').value;
+  Object.entries(CFG).forEach(([k,sel]) => { $(sel).hidden = k !== ch; });
+  document.querySelectorAll('input[name="s-ch"]').forEach(r => r.closest('.radio-card').classList.toggle('on', r.checked));
+  $('#ch-name-box').innerHTML = `<h4 style="margin:0 0 10px;font-size:12.5px;color:var(--accent-ink)">渠道差异化配置 · 当前：${CH_NAMES[ch]}</h4>`;
+  renderBtnFields();
+}
+function renderTrig(){
+  const t = document.querySelector('input[name="s-trig"]:checked').value;
+  $('#trig-event').hidden = t !== 'event';
+  $('#trig-sched').hidden = t !== 'sched';
+  $('#trig-cycle').hidden = t !== 'cycle';
+  document.querySelectorAll('input[name="s-trig"]').forEach(r => r.closest('.radio-card').classList.toggle('on', r.checked));
+  renderEv(); renderSched(); renderCyc();
+}
+function renderEv(){
+  const v = $('#ev-type').value;
+  $('#ev-page').hidden = v !== 'page';
+  $('#ev-open').hidden = v !== 'open';
+  $('#ev-days').hidden = !(v === 'expire' || v === 'trial');
+  $('#ev-bind').hidden = v !== 'bind';
+  $('#ev-days-label').textContent = v === 'expire' ? '到期前' : '新手体验第';
+  $('#ev-days-unit').textContent = v === 'expire' ? '天到期' : '天';
+}
+function renderSched(){
+  const m = $('#sched-mode').value;
+  $('#sched-single').hidden = m !== '单次定时';
+  $('#sched-range').hidden = m !== '时间段';
+}
+function renderCyc(){
+  const f = $('#cyc-freq').value;
+  $('#cyc-day').hidden = f !== '每天';
+  $('#cyc-week').hidden = f !== '每周';
+  $('#cyc-month').hidden = f !== '每月';
+}
+function trigSummary(){
+  const t = document.querySelector('input[name="s-trig"]:checked').value;
+  if(t === 'event'){
+    const v = $('#ev-type').value;
+    if(v === 'page') return '事件 · 进入指定页：' + ($('#ev-page select').value || '');
+    if(v === 'open') return '事件 · 打开 App（' + ($('#ev-open select').value || '') + '）';
+    if(v === 'bind') return '事件 · 绑定设备成功';
+    if(v === 'expire') return '事件 · 订阅到期前 ' + $('#ev-days-num').value + ' 天';
+    return '事件 · 新手体验第 ' + $('#ev-days-num').value + ' 天';
+  }
+  if(t === 'sched'){
+    return $('#sched-mode').value === '单次定时' ? '定时 · ' + $('#sched-dt').value.replace('T',' ') : '定时 · ' + $('#sched-from').value + ' 至 ' + $('#sched-to').value + ' 每天 ' + $('#sched-time').value;
+  }
+  const f = $('#cyc-freq').value;
+  if(f === '每天') return '周期 · 每天 ' + $('#cyc-day input[type="time"]').value;
+  if(f === '每周') return '周期 · 每周 ' + [...document.querySelectorAll('#cyc-week .chip.on')].map(c=>c.textContent).join('/') + ' ' + $('#cyc-week input[type="time"]').value;
+  return '周期 · 每月 ' + $('#cyc-month input[type="text"]').value + ' 号 ' + $('#cyc-month input[type="time"]').value;
+}
+document.querySelectorAll('input[name="s-trig"]').forEach(r => r.addEventListener('change', renderTrig));
+$('#ev-type').addEventListener('change', renderEv);
+$('#sched-mode').addEventListener('change', renderSched);
+$('#cyc-freq').addEventListener('change', renderCyc);
+function renderBtnFields(){
+  const type = $('#pop-btns').value;
+  $('#pop-main-wrap').hidden = type === '无按钮';
+  $('#pop-sec-wrap').hidden = type !== '主次按钮';
+  $('#pop-none-note').hidden = type !== '无按钮';
+}
+function buildPreview(){
+  const ch = document.querySelector('input[name="s-ch"]:checked').value;
+  const en = $('#txt-en').value || 'Your trial is halfway! Upgrade to Pro.';
+  if(ch === 'pop'){
+    const pos = $('#pop-pos').value, btns = $('#pop-btns').value, main = $('#pop-main').value, sec = $('#pop-sec').value;
+    const btnHtml = btns === '无按钮' ? '' : `<div style="display:flex;gap:8px"><button class="btn btn-primary" style="flex:1">${main}</button>${btns === '主次按钮' ? `<button class="btn" style="flex:1">${sec}</button>` : ''}</div>`;
+    $('#s-preview').innerHTML = `<div class="pop-card"><span class="card-sub">${pos}</span><b>${en}</b><p style="font-size:12px;color:var(--text-2);margin:8px 0">${$('#txt-link').value}</p>${btnHtml}</div>`;
+  } else if(ch === 'push'){
+    $('#s-preview').innerHTML = `<div class="push-line"><b>${$('#push-title').value}</b><div style="font-size:11px;color:var(--text-2)">${$('#push-body').value} · ${$('#push-link').value} · 角标：${$('#push-badge').value}</div></div>`;
+  } else if(ch === 'banner'){
+    $('#s-preview').innerHTML = `<div class="banner-line"><b>${en}</b><div style="font-size:12px;opacity:.9">${$('#bnr-pos').value} · 轮播 ${$('#bnr-order').value} · ${$('#bnr-on').value} 至 ${$('#bnr-off').value}</div></div>`;
+  } else {
+    $('#s-preview').innerHTML = `<div class="inbox-line"><b>${$('#inbox-text').value}</b><div style="font-size:11px;color:var(--text-2)">${$('#inbox-read').value}</div></div>`;
+  }
+}
+function setStep(n){
+  step=n;
+  document.querySelectorAll('.wizard-step').forEach(s=>s.classList.toggle('on', +s.dataset.wstep===n));
+  document.querySelectorAll('#wsteps .step').forEach(s=>s.classList.toggle('on', +s.dataset.step<=n));
+  $('#btn-prev').disabled = n===0; $('#btn-next').hidden = n===5; $('#btn-pub').hidden = n!==5;
+  if(n===5){ $('#sum-name').textContent=$('#s-name').value||'（未命名）'; $('#sum-ch').textContent=CH_NAMES[document.querySelector('input[name="s-ch"]:checked').value]; $('#sum-trig').textContent=trigSummary(); buildPreview(); }
+}
+document.querySelectorAll('input[name="s-ch"]').forEach(r=>r.addEventListener('change',renderAdapt));
+document.querySelectorAll('input[name="s-line"]').forEach(r=>r.addEventListener('change',()=>document.querySelectorAll('input[name="s-line"]').forEach(x=>x.closest('.radio-card').classList.toggle('on', x.checked))));
+$('#pop-btns').addEventListener('change',renderBtnFields);
+$('#s-seg').addEventListener('change',e=>{ $('#s-hit').textContent = e.target.value.includes('seg_003')?'92':e.target.value.includes('seg_002')?'486':'全量'; });
+$('#s-limit').addEventListener('input',()=>{
+  const v = +$('#s-limit').value || 0;
+  $('#freq-warn').innerHTML = v > 5 ? '<div class="warn-inline">⚠ 策略级限次高于全局上限（5 次/日），发布将冲突预警：策略级不得宽于全局。</div>' : '';
+});
+$('#btn-next').addEventListener('click',()=>setStep(step+1));
+$('#btn-prev').addEventListener('click',()=>setStep(step-1));
+$('#btn-draft').addEventListener('click',()=>toast('草稿已保存'));
+$('#btn-pub').addEventListener('click',()=>{
+  if(!$('#s-name').value.trim()){ toast('请先填写策略名称'); return; }
+  const limit=+$('#s-limit').value||0;
+  if(limit>5){ toast('发布被阻断：频控高于全局上限（演示）'); return; }
+  STRS.unshift({ id:Date.now(), name:$('#s-name').value, region:'北美', seg:'seg_003 狩猎体验第10天（92 人）', line:document.querySelector('input[name="s-line"]:checked').value, ch:document.querySelector('input[name="s-ch"]:checked').value, status:'已发布', created:'2026-08-12' });
+  toast('策略已发布（演示），操作已留日志'); $('#s-name').value=''; $('#s-limit').value='1'; $('#freq-warn').innerHTML='';
+  setTimeout(()=>showView('strategies'),900);
+});
+$('#freq-save').addEventListener('click',()=>toast('全局频控配置已保存并生效（演示），操作已留日志'));
+
+document.querySelectorAll('#st-tabs button').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{ const d=b.closest('.overlay,.drawer'); if(d) d.hidden=true; }));
+$('#btn-note').addEventListener('click',()=>show($('#note-drawer')));
+window.addEventListener('hashchange',()=>{ const v=location.hash.replace('#',''); if(['strategies','editor','freq'].includes(v) && !document.getElementById('view-'+v).classList.contains('on')) showView(v); });
+renderStrs(); renderAdapt(); renderTrig();
+if(location.hash) showView(location.hash.replace('#',''));
+</script>
+</body>
+</html>
