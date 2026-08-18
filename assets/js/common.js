@@ -28,7 +28,6 @@ var NAV = [
       { label: '策略配置', href: 'strategy-list.html' },
       { label: '策略编辑器', href: 'strategy-editor.html' },
       { label: '渠道适配', href: 'channels.html' },
-      { label: '全局频控', href: 'frequency.html' },
     ] },
   ] },
   { group: '后续版本（v2）', items: [
