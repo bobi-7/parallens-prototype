@@ -1,0 +1,50 @@
+/* ============================================================
+   Parallens 用户运营后台 · 通用后台风格（蓝白）配色试点
+   试点范围：用户列表（users-list）+ 用户画像（user-detail）
+   实现方式：覆盖 common.css 的 CSS 变量 + 少量硬编码色
+   效果确认后再决定是否全站推广
+   ============================================================ */
+
+:root {
+  /* 色板 */
+  --bg: #f2f4f7;              /* 内容区蓝灰白 */
+  --bg-deep: #e9edf2;
+  --panel: #ffffff;
+  --sidebar: #1d2b3a;         /* 深蓝灰 */
+  --sidebar-deep: #16202c;
+  --sidebar-text: #a3b2c5;
+  --sidebar-active: #ffffff;
+
+  /* 品牌双色（通用后台以主蓝为主） */
+  --bird: #2563eb;            /* 主蓝 */
+  --bird-soft: #e8effd;
+  --hunt: #d97706;            /* 琥珀橙 */
+  --hunt-soft: #fdf0e0;
+
+  /* 语义 */
+  --ink: #1f2733;             /* 主文本冷黑 */
+  --ink-2: #4b5565;
+  --ink-3: #8a93a6;
+  --line: #e2e7ee;
+  --line-soft: #eef1f5;
+
+  /* 状态 */
+  --ok: #16a34a;
+  --warn: #d97706;
+  --danger: #dc2626;
+  --info: #2563eb;
+
+  --shadow: 0 1px 2px rgba(31,39,51,.05), 0 4px 16px rgba(31,39,51,.06);
+  --shadow-lg: 0 4px 12px rgba(31,39,51,.10), 0 16px 48px rgba(31,39,51,.12);
+}
+
+/* 硬编码色覆盖（common.css 未走变量的部分） */
+.btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+.btn-hunt:hover { background: #b45309; border-color: #b45309; }
+.table tbody tr:hover { background: #f5f7fb; }
+.badge-gray { background: #eef1f5; color: #5b6b7f; }
+.badge-pl.both, .pl-tag.both { background: #e9edf2; color: #4b5565; }
+.toast.ok { border-left-color: #22c55e; }
+.toast.warn { border-left-color: #f59e0b; }
+.toast.err { border-left-color: #ef4444; }
+::-webkit-scrollbar-thumb { background: #c3cad6; border-color: var(--bg); }

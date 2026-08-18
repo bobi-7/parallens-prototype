@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>策略触达 · 可点击原型 · Parallens 用户运营后台</title>
+<title>策略触达 · 可点击原型 · Demo 用户运营后台</title>
 <link rel="icon" href="data:,">
 <style>
 /* ============================================================
-   Parallens 用户运营后台 · 设计 token 与组件样式 v0.1
+   Demo 用户运营后台 · 设计 token 与组件样式 v0.1
    通用后台风：precision utility / 浅色、高信息密度、克制动效
    ============================================================ */
 :root {
@@ -39,7 +39,7 @@
   --radius-sm: 7px;
   --shadow: 0 1px 2px rgba(15,23,42,.05), 0 10px 28px -18px rgba(15,23,42,.18);
   --mono: "SF Mono", ui-monospace, "Cascadia Code", "JetBrains Mono", Consolas, monospace;
-  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --sans: -apple-system, BlinkMacSystemFont,  "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -330,7 +330,7 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><div class="brand-mark">P</div><div><div class="brand-name">Parallens 运营后台</div><div class="brand-sub">User Operations Console</div></div></div>
+    <div class="brand"><div class="brand-mark">P</div><div><div class="brand-name">Demo 运营后台</div><div class="brand-sub">User Operations Console</div></div></div>
     <div class="nav-group">总览</div>
     <a class="nav-item" href="#"><span class="nav-ico">▦</span><span>工作台</span></a>
     <div class="nav-group">运营</div>
@@ -408,11 +408,11 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch">
               <div>
                 <h4 style="margin:0 0 10px;font-size:12.5px;color:var(--text-2)">多语言文案</h4>
-                <div class="lang-row"><span class="lang">EN（必填）</span><input class="input" id="txt-en" style="flex:1" value="Your 7-day trial is halfway! Upgrade to Pro and keep every moment."></div>
+                <div class="lang-row"><span class="lang">EN（必填）</span><input class="input" id="txt-en" style="flex:1" value="Your 7-day trial is halfway! Upgrade to the higher plan and keep every moment."></div>
                 <div class="lang-row"><span class="lang">DE</span><input class="input" id="txt-de" style="flex:1" placeholder="未配置则回退英语"></div>
                 <div class="lang-row"><span class="lang">FR</span><input class="input" id="txt-fr" style="flex:1" placeholder="未配置则回退英语"></div>
                 <div class="field" style="margin-bottom:10px"><label>配图</label><button class="btn">上传图片</button></div>
-                <div class="field"><label>跳转链接</label><input class="input" id="txt-link" value="parallens://upgrade"></div>
+                <div class="field"><label>跳转链接</label><input class="input" id="txt-link" value="demoapp://upgrade"></div>
               </div>
               <div>
                 <div id="ch-name-box"></div>
@@ -423,7 +423,7 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
                     <div class="field"><label>按钮类型</label><select class="input" id="pop-btns"><option>主次按钮</option><option>单按钮</option><option>无按钮</option></select></div>
                   </div>
                   <div class="btn-fields" id="pop-main-wrap">
-                    <div class="field"><label>主按钮文案 *</label><input class="input" id="pop-main" value="查看 Pro 权益"></div>
+                    <div class="field"><label>主按钮文案 *</label><input class="input" id="pop-main" value="查看升级权益"></div>
                     <div class="field" id="pop-sec-wrap"><label>次按钮文案</label><input class="input" id="pop-sec" value="稍后再说"></div>
                   </div>
                   <div class="note" id="pop-none-note" hidden>无按钮模式：仅展示内容与关闭入口。</div>
@@ -431,9 +431,9 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
                 <div id="cfg-push" class="cfg-sec" hidden>
                   <h4>Push</h4>
                   <div class="cfg-grid">
-                    <div class="field full"><label>Push 标题 *</label><input class="input" id="push-title" value="试用过半，别错过 Pro"></div>
+                    <div class="field full"><label>Push 标题 *</label><input class="input" id="push-title" value="试用过半，别错过升级"></div>
                     <div class="field full"><label>Push 正文 *</label><input class="input" id="push-body" value="解锁无限 2.3K 原彩传输与云端识别"></div>
-                    <div class="field full"><label>点击跳转页</label><input class="input" id="push-link" value="parallens://upgrade"></div>
+                    <div class="field full"><label>点击跳转页</label><input class="input" id="push-link" value="demoapp://upgrade"></div>
                     <div class="field full"><label>角标规则</label><select class="input" id="push-badge"><option>不更新角标</option><option>消息计数 +1</option></select></div>
                   </div>
                 </div>
@@ -449,7 +449,7 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
                 <div id="cfg-inbox" class="cfg-sec" hidden>
                   <h4>站内信</h4>
                   <div class="cfg-grid">
-                    <div class="field full"><label>消息中心文案 *</label><input class="input" id="inbox-text" value="试用过半，升级 Pro 解锁全部功能"></div>
+                    <div class="field full"><label>消息中心文案 *</label><input class="input" id="inbox-text" value="试用过半，升级解锁全部功能"></div>
                     <div class="field full"><label>已读逻辑</label><select class="input" id="inbox-read"><option>点击即已读</option><option>打开消息中心已读</option></select></div>
                   </div>
                 </div>
@@ -697,7 +697,7 @@ function renderBtnFields(){
 }
 function buildPreview(){
   const ch = document.querySelector('input[name="s-ch"]:checked').value;
-  const en = $('#txt-en').value || 'Your trial is halfway! Upgrade to Pro.';
+  const en = $('#txt-en').value || 'Your trial is halfway! Upgrade now.';
   if(ch === 'pop'){
     const pos = $('#pop-pos').value, btns = $('#pop-btns').value, main = $('#pop-main').value, sec = $('#pop-sec').value;
     const btnHtml = btns === '无按钮' ? '' : `<div style="display:flex;gap:8px"><button class="btn btn-primary" style="flex:1">${main}</button>${btns === '主次按钮' ? `<button class="btn" style="flex:1">${sec}</button>` : ''}</div>`;

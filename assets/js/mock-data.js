@@ -1,0 +1,181 @@
+/* ============================================================
+   Demo 用户运营后台 · Demo mock 数据
+   值严格对齐背景文档 §5（套餐价格/权益量）
+   技术红线：普通全局变量，不 fetch、不 module
+   ============================================================ */
+window.PLData = {
+  version: '2026-08-07',
+
+  /* ---------- 产品线 ---------- */
+  productLines: [
+    { key: 'bird', name: '观鸟线', model: 'K3' },
+    { key: 'hunt', name: '狩猎线', model: 'TL300' },
+  ],
+
+  /* ---------- 套餐（两线全量；状态机：草稿/待上架/已上架；refPack=定向可见引用分组；schedule=上架方式） ---------- */
+  plans: {
+    bird: [
+      { id: 'BP01', name: { en: 'Bird Plan 1', zh: '观鸟套餐1' }, tier: '观鸟套餐1', price: null, annual: null, perks: ['基础功能（演示数据）'], status: '已上架', schedule: '立即' },
+      { id: 'BP02', name: { en: 'Bird Plan 2', zh: '观鸟套餐2' }, tier: '观鸟套餐2', price: 1.11, annual: 11.11, perks: ['标准权益组合（演示数据）'], status: '已上架', schedule: '立即' },
+      { id: 'BP03', name: { en: 'Bird Plan 3', zh: '观鸟套餐3' }, tier: '观鸟套餐3', price: 2.22, annual: 22.22, perks: ['高配权益组合（演示数据）'], status: '已上架', schedule: '立即' },
+      { id: 'BP04', name: { en: 'Bird Plan 3 Early', zh: '观鸟套餐3早鸟版' }, tier: '观鸟套餐3', price: 2.00, annual: 20.00, perks: ['同观鸟套餐3权益（演示数据）'], status: '草稿', schedule: '定时', refPack: 'P003' },
+    ],
+    hunt: [
+      { id: 'HP01', name: { en: 'Hunt Plan 1', zh: '狩猎套餐1' }, tier: '狩猎套餐1', price: 3.33, renewPrice: 2.22, annual: 33.33, annualSale: 22.22, perks: ['标准权益组合（演示数据）'], status: '已上架', schedule: '立即' },
+      { id: 'HP02', name: { en: 'Hunt Plan 2', zh: '狩猎套餐2' }, tier: '狩猎套餐2', price: 4.44, renewPrice: 3.33, annual: 44.44, annualSale: 33.33, perks: ['标准权益组合（演示数据）'], status: '已上架', schedule: '立即' },
+      { id: 'HP03', name: { en: 'Hunt Plan 3', zh: '狩猎套餐3' }, tier: '狩猎套餐3', price: 5.55, renewPrice: 4.44, annual: 55.55, annualSale: 44.44, perks: ['高配权益组合（演示数据）'], status: '已上架', schedule: '立即' },
+      /* 限定套餐（仅狩猎） */
+      { id: 'HP10', name: { en: 'Hunt Plan 1 Special', zh: '狩猎套餐1特惠' }, tier: '狩猎套餐1', price: 2.00, annual: 20.00, limited: true, campaign: '限时活动', window: '2026-11-21 ~ 2026-12-02', perks: ['同狩猎套餐1权益（演示数据）'], status: '待上架', schedule: '定时', refPack: 'P001' },
+      { id: 'HP11', name: { en: 'Hunt Plan 2 Special', zh: '狩猎套餐2特惠' }, tier: '狩猎套餐2', price: 3.00, annual: 30.00, limited: true, campaign: '限时活动', window: '2026-11-21 ~ 2026-12-02', perks: ['同狩猎套餐2权益（演示数据）'], status: '待上架', schedule: '定时' },
+      { id: 'HP12', name: { en: 'Hunt Plan 3 Special', zh: '狩猎套餐3特惠' }, tier: '狩猎套餐3', price: 4.00, annual: 40.00, limited: true, campaign: '限时活动', window: '2026-11-21 ~ 2026-12-02', perks: ['同狩猎套餐3权益（演示数据）'], status: '待上架', schedule: '定时' },
+      { id: 'HP13', name: { en: 'Seasonal Plan A', zh: '限定套餐A（季卡）' }, tier: '限定套餐A', price: 6.66, duration: '6 个月', limited: true, campaign: '限时活动', window: '2026-10-15 ~ 2027-03-31', perks: ['限时权益组合（演示数据）'], status: '待上架', schedule: '定时', refPack: 'P002' },
+      { id: 'HP14', name: { en: 'Seasonal Plan B', zh: '限定套餐B（季卡）' }, tier: '限定套餐B', price: 8.88, duration: '6 个月', limited: true, campaign: '限时活动', window: '2026-10-15 ~ 2027-03-31', perks: ['限时高配权益组合（演示数据）'], status: '草稿', schedule: '定时' },
+    ],
+    /* AI权益包（狩猎独立 AI 权益） */
+    aiButler: { price: 0.99, annual: 8.99, desc: 'AI 增值权益（演示数据）' },
+    /* 加油包 */
+    booster: {
+      bird: [
+        { id: 'BB01', name: '存储权益包', price: 0.99, unit: '/月', desc: '存储空间增值（演示数据）' },
+        { id: 'BB02', name: '设备权益包', price: 0.99, unit: '/月/台', desc: '设备数量增值（演示数据）' },
+        { id: 'BB03', name: 'AI调用包', price: 0.99, unit: '/月', desc: 'AI 调用次数增值（演示数据）' },
+      ],
+      hunt: [
+        { id: 'HB01', name: '影像权益包', price: 0.99, unit: '/100 张', desc: '账号内共享（演示数据）', ownership: '账号级' },
+        { id: 'HB02', name: 'AI调用包', price: 0.99, unit: '/300 次', desc: 'AI 调用补充（演示数据）' },
+      ],
+    },
+  },
+
+  /* ---------- 用户（20 条，含观鸟典型/狩猎典型/双机用户） ----------
+     注：sub = 观鸟账号级订阅（含 period/purchaseAt/gifts 队列赠送权益）
+         subPerDevice = 狩猎设备级套餐（一条一设备一套餐，同一 SN 可多条=多套餐生效）
+         subHistory = 历史订阅（观鸟条目 sn 为空；狩猎条目带 sn）
+         accountBenefits = 账号级共享权益（观鸟加油包 & 狩猎权益包，带 pl 区分） */
+  users: [
+    { id: 'U1001', email: 'emma.wilson@mail.com', region: '北美', pl: 'bird', createdAt: '2026-09-12', lastActive: '2026-10-08', devices: [{ sn: 'K3-B2F7A01', model: 'K3', activated: '2026-09-12', bound: true }], sub: { tier: '观鸟套餐2', trial: '试用中（7天）', autoRenew: true, expireAt: '2026-10-20', aiRemaining: 288, storageUsed: '3.2/10GB', period: '月付', purchaseAt: '2026-10-08', gifts: [{ name: '观鸟套餐2 30 天赠送', grantedAt: '2026-10-02' }] }, subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐1', period: '—', purchasedAt: '2026-09-12' }, { pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐2', period: '月付', purchasedAt: '2026-10-08' }], accountBenefits: [{ pl: 'bird', name: 'AI调用包', price: 0.99, period: '月付', usage: '已用 12/300 次' }], tags: ['K3开卖活动'], packs: ['P003'], freeze: false },
+    { id: 'U1002', email: 'daniel.ng@mail.com', region: '北美', pl: 'bird', createdAt: '2026-06-02', lastActive: '2026-10-09', devices: [{ sn: 'K3-A1C9D02', model: 'K3', activated: '2026-06-02', bound: true }, { sn: 'K3-A1C9D03', model: 'K3', activated: '2026-07-15', bound: true }, { sn: 'K3-A1C9D04', model: 'K3', activated: '2026-08-20', bound: true }], sub: { tier: '观鸟套餐3', trial: '已转正式', autoRenew: true, expireAt: '2027-06-02', aiRemaining: 620, storageUsed: '12.4/20GB', period: '年付', purchaseAt: '2026-08-02', gifts: [{ name: '观鸟套餐3 30 天赠送', grantedAt: '2026-08-01' }] }, subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐1', period: '—', purchasedAt: '2026-06-02' }, { pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐2', period: '月付', purchasedAt: '2026-07-02' }, { pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐3', period: '年付', purchasedAt: '2026-08-02' }], accountBenefits: [{ pl: 'bird', name: '存储权益包', price: 0.99, period: '月付', usage: '永久收藏 已用 4/100 格' }, { pl: 'bird', name: 'AI调用包', price: 0.99, period: '月付', usage: '已用 380/300 次' }], tags: ['高价值用户', '多设备'], packs: [], freeze: false },
+    { id: 'U1003', email: 'sophie.lee@mail.com', region: '欧洲', pl: 'bird', createdAt: '2026-09-28', lastActive: '2026-10-03', devices: [{ sn: 'K3-B2F7A11', model: 'K3', activated: '2026-09-28', bound: true }], sub: { tier: '观鸟套餐1', trial: '—', autoRenew: false, expireAt: '—', aiRemaining: 12, storageUsed: '0.8/1GB', period: '—', purchaseAt: '—', gifts: [] }, subHistory: [], accountBenefits: [], tags: [], packs: ['P005'], freeze: false },
+    { id: 'U1004', email: 'miguel.rodriguez@mail.com', region: '欧洲', pl: 'bird', createdAt: '2026-08-14', lastActive: '2026-10-06', devices: [{ sn: 'K3-C3E5B21', model: 'K3', activated: '2026-08-14', bound: true }], sub: { tier: '观鸟套餐2', trial: '已取消自动续费', autoRenew: false, expireAt: '2026-11-14', aiRemaining: 45, storageUsed: '8.9/10GB', period: '月付', purchaseAt: '2026-09-14', gifts: [] }, subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐1', period: '—', purchasedAt: '2026-08-14' }, { pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐2', period: '月付', purchasedAt: '2026-09-14' }], accountBenefits: [{ pl: 'bird', name: 'AI调用包', price: 0.99, period: '月付', usage: '已用 255/300 次' }], tags: ['流失风险'], packs: ['P002'], freeze: false },
+    { id: 'U1005', email: 'hannah.kim@mail.com', region: '北美', pl: 'bird', createdAt: '2026-07-01', lastActive: '2026-10-09', devices: [{ sn: 'K3-D2F8C33', model: 'K3', activated: '2026-07-01', bound: true }], sub: { tier: '观鸟套餐2', trial: '已转正式', autoRenew: true, expireAt: '2027-07-01', aiRemaining: 45, storageUsed: '6.1/10GB', period: '月付', purchaseAt: '2026-08-01', gifts: [] }, subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐1', period: '—', purchasedAt: '2026-07-01' }, { pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐2', period: '月付', purchasedAt: '2026-08-01' }], accountBenefits: [], tags: [], packs: [], freeze: false },
+    { id: 'U2001', email: 'jack.taylor@mail.com', region: '北美', pl: 'hunt', createdAt: '2026-09-30', lastActive: '2026-10-09', devices: [{ sn: 'TL300-00A1F1', model: 'TL300', activated: '2026-09-30', bound: true }], subPerDevice: [{ sn: 'TL300-00A1F1', tier: '狩猎套餐2', expStatus: '体验中（第10天）', expireAt: '2026-10-14', period: '体验期', purchaseAt: '—', gifts: [] }], subHistory: [], accountBenefits: [{ pl: 'hunt', name: 'AI调用包', price: 0.99, period: '月付', usage: '剩余 282/300 次' }], hdRemaining: 2, aiDialog: 18, limitedPurchases: [], tags: ['体验期'], packs: ['P001'], freeze: false },
+    { id: 'U2002', email: 'luke.morgan@mail.com', region: '北美', pl: 'hunt', createdAt: '2026-08-08', lastActive: '2026-10-09', devices: [{ sn: 'TL300-00B2G2', model: 'TL300', activated: '2026-08-08', bound: true }], subPerDevice: [{ sn: 'TL300-00B2G2', tier: '狩猎套餐3', expStatus: '已转付费', expireAt: '2027-08-08', period: '年付', purchaseAt: '2026-08-08', gifts: [] }], subHistory: [{ pl: 'hunt', model: 'TL300', sn: 'TL300-00B2G2', tier: '狩猎套餐1（体验）', period: '体验期', purchasedAt: '2026-08-08' }, { pl: 'hunt', model: 'TL300', sn: 'TL300-00B2G2', tier: '狩猎套餐3', period: '年付', purchasedAt: '2026-08-08' }], accountBenefits: [{ pl: 'hunt', name: '影像权益包', price: 0.99, period: '单次（100 张）', usage: 'HD 剩余 62/100 张' }, { pl: 'hunt', name: 'AI调用包', price: 0.99, period: '月付', usage: '剩余 40/300 次' }], hdRemaining: 21, aiDialog: 260, limitedPurchases: [], tags: [], packs: [], freeze: false },
+    { id: 'U2003', email: 'olivia.brown@mail.com', region: '欧洲', pl: 'hunt', createdAt: '2026-09-20', lastActive: '2026-10-05', devices: [{ sn: 'TL300-00C3H3', model: 'TL300', activated: '2026-09-20', bound: true }], subPerDevice: [{ sn: 'TL300-00C3H3', tier: '狩猎套餐1', expStatus: '体验已过期未付费', expireAt: '2026-10-04', period: '体验期', purchaseAt: '—', gifts: [] }], subHistory: [], accountBenefits: [], hdRemaining: 0, aiDialog: 0, limitedPurchases: [], tags: ['体验过期'], packs: ['P001'], freeze: false },
+    { id: 'U2004', email: 'tyler.james@mail.com', region: '北美', pl: 'hunt', createdAt: '2026-07-19', lastActive: '2026-10-08', devices: [{ sn: 'TL300-00D4J4', model: 'TL300', activated: '2026-07-19', bound: true }], subPerDevice: [{ sn: 'TL300-00D4J4', tier: '狩猎套餐3', expStatus: '已转付费', expireAt: '2027-04-18', period: '年付', purchaseAt: '2026-07-19', gifts: [] }, { sn: 'TL300-00D4J4', tier: '限定套餐A（季卡）', expStatus: '已转付费', expireAt: '2027-04-17', period: '季卡', purchaseAt: '2026-10-18', gifts: [] }], subHistory: [{ pl: 'hunt', model: 'TL300', sn: 'TL300-00D4J4', tier: '狩猎套餐1（体验）', period: '体验期', purchasedAt: '2026-07-19' }, { pl: 'hunt', model: 'TL300', sn: 'TL300-00D4J4', tier: '狩猎套餐3', period: '年付', purchasedAt: '2026-07-19' }], accountBenefits: [{ pl: 'hunt', name: '影像权益包', price: 0.99, period: '单次（100 张）', usage: 'HD 剩余 8/100 张' }, { pl: 'hunt', name: 'AI调用包', price: 0.99, period: '月付', usage: '剩余 150/300 次' }], hdRemaining: 14, aiDialog: 150, limitedPurchases: [{ name: '限定套餐A（季卡）', price: 6.66, boughtAt: '2026-10-18', valid: '6 个月' }], tags: ['限定套餐用户'], packs: [], freeze: false },
+    { id: 'U2005', email: 'isaac.hughes@mail.com', region: '欧洲', pl: 'hunt', createdAt: '2026-08-25', lastActive: '2026-10-07', devices: [{ sn: 'TL300-00E5K5', model: 'TL300', activated: '2026-08-25', bound: true }, { sn: 'TL300-00E5K6', model: 'TL300', activated: '2026-09-30', bound: true }], subPerDevice: [{ sn: 'TL300-00E5K5', tier: '狩猎套餐1', expStatus: '已转付费', expireAt: '2027-08-25', period: '年付', purchaseAt: '2026-08-25', gifts: [] }, { sn: 'TL300-00E5K6', tier: '—', expStatus: '体验中（第9天）', expireAt: '2026-10-14', period: '体验期', purchaseAt: '—', gifts: [] }], subHistory: [{ pl: 'hunt', model: 'TL300', sn: 'TL300-00E5K5', tier: '狩猎套餐1（体验）', period: '体验期', purchasedAt: '2026-08-25' }], accountBenefits: [{ pl: 'hunt', name: 'AI调用包', price: 0.99, period: '月付', usage: '剩余 278/300 次' }], hdRemaining: 3, aiDialog: 22, limitedPurchases: [], tags: ['双设备'], packs: [], freeze: false },
+    /* 双机用户 */
+    { id: 'U3001', email: 'maya.sato@mail.com', region: '北美', pl: 'both', createdAt: '2026-07-10', lastActive: '2026-10-09', devices: [{ sn: 'K3-E6F7L7', model: 'K3', activated: '2026-07-10', bound: true }, { sn: 'K3-E6F7L8', model: 'K3', activated: '2026-08-01', bound: true }, { sn: 'TL300-00F6M6', model: 'TL300', activated: '2026-09-15', bound: true }], sub: { tier: '观鸟套餐2', trial: '已转正式', autoRenew: true, expireAt: '2027-07-10', aiRemaining: 190, storageUsed: '7.7/10GB', period: '年付', purchaseAt: '2026-07-10', gifts: [{ name: '观鸟套餐2 30 天赠送', grantedAt: '2026-09-20' }] }, subPerDevice: [{ sn: 'TL300-00F6M6', tier: '狩猎套餐2', expStatus: '已转付费', expireAt: '2027-09-15', period: '年付', purchaseAt: '2026-09-15', gifts: [] }], subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐1', period: '—', purchasedAt: '2026-07-10' }, { pl: 'bird', model: 'K3', sn: '', tier: '狩猎套餐2', period: '年付', purchasedAt: '2026-07-10' }, { pl: 'hunt', model: 'TL300', sn: 'TL300-00F6M6', tier: '狩猎套餐1（体验）', period: '体验期', purchasedAt: '2026-09-15' }, { pl: 'hunt', model: 'TL300', sn: 'TL300-00F6M6', tier: '狩猎套餐2', period: '年付', purchasedAt: '2026-09-15' }], accountBenefits: [{ pl: 'bird', name: '存储权益包', price: 0.99, period: '月付', usage: '永久收藏 已用 22/100 格' }, { pl: 'hunt', name: '影像权益包', price: 0.99, period: '单次（100 张）', usage: 'HD 剩余 88/100 张' }], hdRemaining: 6, aiDialog: 88, limitedPurchases: [], tags: ['双机用户'], packs: [], freeze: false },
+    { id: 'U3002', email: 'noah.williams@mail.com', region: '欧洲', pl: 'both', createdAt: '2026-08-05', lastActive: '2026-10-01', devices: [{ sn: 'K3-F8G9N9', model: 'K3', activated: '2026-08-05', bound: true }, { sn: 'TL300-00G7N7', model: 'TL300', activated: '2026-09-10', bound: true }], sub: { tier: '观鸟套餐1', trial: '—', autoRenew: false, expireAt: '—', aiRemaining: 5, storageUsed: '0.5/1GB', period: '—', purchaseAt: '—', gifts: [] }, subPerDevice: [{ sn: 'TL300-00G7N7', tier: '狩猎套餐1', expStatus: '体验中（第4天）', expireAt: '2026-10-20', period: '体验期', purchaseAt: '—', gifts: [] }], subHistory: [], accountBenefits: [], hdRemaining: 4, aiDialog: 27, limitedPurchases: [], tags: ['双机用户'], packs: ['P005'], freeze: false },
+    /* 其余普通用户 */
+    { id: 'U1006', email: 'liam.smith@mail.com', region: '北美', pl: 'bird', createdAt: '2026-10-02', lastActive: '2026-10-09', devices: [{ sn: 'K3-G0H1P0', model: 'K3', activated: '2026-10-02', bound: true }], sub: { tier: '观鸟套餐2', trial: '试用中（7天）', autoRenew: true, expireAt: '2026-10-16', aiRemaining: 300, storageUsed: '0.2/10GB', period: '月付', purchaseAt: '2026-10-02', gifts: [{ name: 'AI调用包 300 次赠送', grantedAt: '2026-10-03' }] }, subHistory: [], accountBenefits: [], tags: [], packs: ['P003'], freeze: false },
+    { id: 'U1007', email: 'ava.martin@mail.com', region: '欧洲', pl: 'bird', createdAt: '2026-05-20', lastActive: '2026-09-01', devices: [{ sn: 'K3-H1J2Q1', model: 'K3', activated: '2026-05-20', bound: false }], sub: { tier: '观鸟套餐1', trial: '—', autoRenew: false, expireAt: '—', aiRemaining: 0, storageUsed: '1.0/1GB', period: '—', purchaseAt: '—', gifts: [] }, subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐2', period: '月付', purchasedAt: '2026-05-20' }], accountBenefits: [], tags: ['30日未活跃'], packs: ['P004'], freeze: false },
+    { id: 'U2006', email: 'ethan.clark@mail.com', region: '北美', pl: 'hunt', createdAt: '2026-08-30', lastActive: '2026-10-08', devices: [{ sn: 'TL300-00H2R2', model: 'TL300', activated: '2026-08-30', bound: true }], subPerDevice: [{ sn: 'TL300-00H2R2', tier: '狩猎套餐1', expStatus: '已转付费', expireAt: '2027-08-30', period: '年付', purchaseAt: '2026-08-30', gifts: [] }], subHistory: [{ pl: 'hunt', model: 'TL300', sn: 'TL300-00H2R2', tier: '狩猎套餐1（体验）', period: '体验期', purchasedAt: '2026-08-30' }, { pl: 'hunt', model: 'TL300', sn: 'TL300-00H2R2', tier: '狩猎套餐1', period: '年付', purchasedAt: '2026-08-30' }], accountBenefits: [], hdRemaining: 1, aiDialog: 45, limitedPurchases: [], tags: [], packs: [], freeze: false },
+    { id: 'U1008', email: 'mia.johnson@mail.com', region: '北美', pl: 'bird', createdAt: '2026-09-05', lastActive: '2026-10-07', devices: [{ sn: 'K3-J3K4S2', model: 'K3', activated: '2026-09-05', bound: true }], sub: { tier: '观鸟套餐2', trial: '已取消自动续费', autoRenew: false, expireAt: '2026-11-05', aiRemaining: 210, storageUsed: '4.4/10GB', period: '月付', purchaseAt: '2026-10-05', gifts: [] }, subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐1', period: '—', purchasedAt: '2026-09-05' }, { pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐2', period: '月付', purchasedAt: '2026-10-05' }], accountBenefits: [{ pl: 'bird', name: 'AI调用包', price: 0.99, period: '月付', usage: '已用 90/300 次' }], tags: [], packs: ['P002'], freeze: false },
+    { id: 'U2007', email: 'logan.davis@mail.com', region: '欧洲', pl: 'hunt', createdAt: '2026-09-25', lastActive: '2026-10-09', devices: [{ sn: 'TL300-00I3T3', model: 'TL300', activated: '2026-09-25', bound: true }], subPerDevice: [{ sn: 'TL300-00I3T3', tier: '狩猎套餐3', expStatus: '体验中（第6天）', expireAt: '2026-10-13', period: '体验期', purchaseAt: '—', gifts: [] }], subHistory: [], accountBenefits: [{ pl: 'hunt', name: 'AI调用包', price: 0.99, period: '月付', usage: '剩余 270/300 次' }], hdRemaining: 3, aiDialog: 30, limitedPurchases: [], tags: ['体验期'], packs: ['P001'], freeze: false },
+    { id: 'U1009', email: 'charlotte.w@mail.com', region: '欧洲', pl: 'bird', createdAt: '2026-04-11', lastActive: '2026-10-09', devices: [{ sn: 'K3-K4L5U3', model: 'K3', activated: '2026-04-11', bound: true }], sub: { tier: '观鸟套餐3', trial: '已转正式', autoRenew: true, expireAt: '2027-04-11', aiRemaining: 830, storageUsed: '15.2/20GB', period: '年付', purchaseAt: '2026-06-11', gifts: [] }, subHistory: [{ pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐1', period: '—', purchasedAt: '2026-04-11' }, { pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐2', period: '月付', purchasedAt: '2026-05-11' }, { pl: 'bird', model: 'K3', sn: '', tier: '观鸟套餐3', period: '年付', purchasedAt: '2026-06-11' }], accountBenefits: [{ pl: 'bird', name: '存储权益包', price: 0.99, period: '月付', usage: '永久收藏 已用 5/100 格' }], tags: ['高价值用户'], packs: [], freeze: false },
+    { id: 'U2008', email: 'william.hall@mail.com', region: '北美', pl: 'hunt', createdAt: '2026-09-18', lastActive: '2026-10-02', devices: [{ sn: 'TL300-00J4V4', model: 'TL300', activated: '2026-09-18', bound: true }], subPerDevice: [{ sn: 'TL300-00J4V4', tier: '狩猎套餐1', expStatus: '体验已过期未付费', expireAt: '2026-10-02', period: '体验期', purchaseAt: '—', gifts: [] }], subHistory: [], accountBenefits: [], hdRemaining: 0, aiDialog: 0, limitedPurchases: [], tags: ['体验过期'], packs: ['P001'], freeze: false },
+    { id: 'U1010', email: 'amelia.b@mail.com', region: '北美', pl: 'bird', createdAt: '2026-08-19', lastActive: '2026-10-06', devices: [{ sn: 'K3-L5M6W4', model: 'K3', activated: '2026-08-19', bound: true }], sub: { tier: '观鸟套餐1', trial: '—', autoRenew: false, expireAt: '—', aiRemaining: 3, storageUsed: '0.9/1GB', period: '—', purchaseAt: '—', gifts: [] }, subHistory: [], accountBenefits: [], tags: [], packs: ['P004'], freeze: false },
+  ],
+
+  /* ---------- 订单（§6.3 订单查询；订阅/兑换码核销/优惠券核销/赠送，状态机见文档 6.3.4） ---------- */
+  orders: [
+    /* U1001 观鸟套餐2 试用 */
+    { id: 'ORD20260912001', type: '订阅', pl: 'bird', userId: 'U1001', email: 'emma.wilson@mail.com', sn: '', item: '观鸟套餐2 月付', amount: 1.11, currency: 'USD', status: '已到账', createdAt: '2026-09-12', paidAt: '2026-09-12', channel: 'App Store' },
+    { id: 'ORD20261002001', type: '兑换码核销', pl: 'bird', userId: 'U1001', email: 'emma.wilson@mail.com', sn: '', item: '观鸟套餐2 30 天赠送', amount: 0, currency: 'USD', status: '已核销', createdAt: '2026-10-02', paidAt: '2026-10-02', channel: '兑换码' },
+    { id: 'ORD20261008001', type: '订阅', pl: 'bird', userId: 'U1001', email: 'emma.wilson@mail.com', sn: '', item: '观鸟套餐2 月付', amount: 1.11, currency: 'USD', status: '已到账', createdAt: '2026-10-08', paidAt: '2026-10-08', channel: 'App Store' },
+    /* U1002 观鸟套餐3 年付 */
+    { id: 'ORD20260602001', type: '订阅', pl: 'bird', userId: 'U1002', email: 'daniel.ng@mail.com', sn: '', item: '观鸟套餐2 月付', amount: 1.11, currency: 'USD', status: '已退款', createdAt: '2026-06-02', paidAt: '2026-06-02', channel: 'App Store' },
+    { id: 'ORD20260702001', type: '订阅', pl: 'bird', userId: 'U1002', email: 'daniel.ng@mail.com', sn: '', item: '观鸟套餐3 月付', amount: 2.22, currency: 'USD', status: '已到账', createdAt: '2026-07-02', paidAt: '2026-07-02', channel: 'App Store' },
+    { id: 'ORD20260801001', type: '赠送', pl: 'bird', userId: 'U1002', email: 'daniel.ng@mail.com', sn: '', item: '观鸟套餐3 30 天赠送', amount: 0, currency: 'USD', status: '已发放', createdAt: '2026-08-01', paidAt: '—', channel: '后台赠送' },
+    { id: 'ORD20260802001', type: '订阅', pl: 'bird', userId: 'U1002', email: 'daniel.ng@mail.com', sn: '', item: '观鸟套餐3 年付', amount: 22.22, currency: 'USD', status: '已到账', createdAt: '2026-08-02', paidAt: '2026-08-02', channel: 'App Store' },
+    /* U1003 观鸟 Free */
+    { id: 'ORD20260928001', type: '兑换码核销', pl: 'bird', userId: 'U1003', email: 'sophie.lee@mail.com', sn: '', item: 'AI调用包 300 次（购机附赠）', amount: 0, currency: 'USD', status: '已核销', createdAt: '2026-09-28', paidAt: '2026-09-28', channel: '兑换码' },
+    /* U1004 观鸟套餐2 已取消自动续费 */
+    { id: 'ORD20260914001', type: '订阅', pl: 'bird', userId: 'U1004', email: 'miguel.rodriguez@mail.com', sn: '', item: '观鸟套餐2 月付', amount: 1.11, currency: 'USD', status: '已到账', createdAt: '2026-09-14', paidAt: '2026-09-14', channel: 'App Store' },
+    { id: 'ORD20261005001', type: '订阅', pl: 'bird', userId: 'U1004', email: 'miguel.rodriguez@mail.com', sn: '', item: '观鸟套餐2 月付', amount: 1.11, currency: 'USD', status: '已到账', createdAt: '2026-10-05', paidAt: '2026-10-05', channel: 'App Store' },
+    /* U1005 观鸟套餐2 */
+    { id: 'ORD20260801001', type: '订阅', pl: 'bird', userId: 'U1005', email: 'hannah.kim@mail.com', sn: '', item: '观鸟套餐2 月付', amount: 1.11, currency: 'USD', status: '已到账', createdAt: '2026-08-01', paidAt: '2026-08-01', channel: 'App Store' },
+    /* U2001 狩猎套餐2 体验中 */
+    { id: 'ORD20260930001', type: '赠送', pl: 'hunt', userId: 'U2001', email: 'jack.taylor@mail.com', sn: 'TL300-00A1F1', item: '限定套餐A（购机附赠）', amount: 0, currency: 'USD', status: '已发放', createdAt: '2026-09-30', paidAt: '—', channel: '后台赠送' },
+    { id: 'ORD20261008001', type: '订阅', pl: 'hunt', userId: 'U2001', email: 'jack.taylor@mail.com', sn: 'TL300-00A1F1', item: '狩猎套餐2 月付（体验转正式）', amount: 4.44, currency: 'USD', status: '待支付', createdAt: '2026-10-08', paidAt: '—', channel: 'App Store' },
+    /* U2002 狩猎套餐3 年付 */
+    { id: 'ORD20260808001', type: '订阅', pl: 'hunt', userId: 'U2002', email: 'luke.morgan@mail.com', sn: 'TL300-00B2G2', item: '狩猎套餐3 年付', amount: 44.44, currency: 'USD', status: '已到账', createdAt: '2026-08-08', paidAt: '2026-08-08', channel: 'App Store' },
+    { id: 'ORD20260901001', type: '兑换码核销', pl: 'hunt', userId: 'U2002', email: 'luke.morgan@mail.com', sn: 'TL300-00B2G2', item: '影像权益包 100 张', amount: 0, currency: 'USD', status: '已核销', createdAt: '2026-09-01', paidAt: '2026-09-01', channel: '兑换码' },
+    /* U2003 体验过期 */
+    { id: 'ORD20260920001', type: '赠送', pl: 'hunt', userId: 'U2003', email: 'olivia.brown@mail.com', sn: 'TL300-00C3H3', item: '狩猎套餐1 体验期（14 天）', amount: 0, currency: 'USD', status: '已发放', createdAt: '2026-09-20', paidAt: '—', channel: '后台赠送' },
+    /* U2004 狩猎套餐3 + 季卡（一设备多套餐） */
+    { id: 'ORD20260719001', type: '订阅', pl: 'hunt', userId: 'U2004', email: 'tyler.james@mail.com', sn: 'TL300-00D4J4', item: '狩猎套餐3 年付', amount: 44.44, currency: 'USD', status: '已到账', createdAt: '2026-07-19', paidAt: '2026-07-19', channel: 'App Store' },
+    { id: 'ORD20261018001', type: '订阅', pl: 'hunt', userId: 'U2004', email: 'tyler.james@mail.com', sn: 'TL300-00D4J4', item: '限定套餐A（季卡）', amount: 6.66, currency: 'USD', status: '已到账', createdAt: '2026-10-18', paidAt: '2026-10-18', channel: 'App Store' },
+    { id: 'ORD20261018002', type: '优惠券核销', pl: 'hunt', userId: 'U2004', email: 'tyler.james@mail.com', sn: 'TL300-00D4J4', item: '影像权益包折扣券', amount: 0, currency: 'USD', status: '已使用', createdAt: '2026-10-18', paidAt: '2026-10-18', channel: '优惠券' },
+    /* U2005 狩猎双设备 */
+    { id: 'ORD20260825001', type: '订阅', pl: 'hunt', userId: 'U2005', email: 'isaac.hughes@mail.com', sn: 'TL300-00E5K5', item: '狩猎套餐1 年付', amount: 22.22, currency: 'USD', status: '已到账', createdAt: '2026-08-25', paidAt: '2026-08-25', channel: 'App Store' },
+    /* U3001 双机 */
+    { id: 'ORD20260710001', type: '订阅', pl: 'bird', userId: 'U3001', email: 'maya.sato@mail.com', sn: '', item: '观鸟套餐2 年付', amount: 11.11, currency: 'USD', status: '已到账', createdAt: '2026-07-10', paidAt: '2026-07-10', channel: 'App Store' },
+    { id: 'ORD20260915001', type: '订阅', pl: 'hunt', userId: 'U3001', email: 'maya.sato@mail.com', sn: 'TL300-00F6M6', item: '狩猎套餐2 年付', amount: 33.33, currency: 'USD', status: '已到账', createdAt: '2026-09-15', paidAt: '2026-09-15', channel: 'App Store' },
+    { id: 'ORD20260915002', type: '兑换码核销', pl: 'hunt', userId: 'U3001', email: 'maya.sato@mail.com', sn: 'TL300-00F6M6', item: '限定套餐A（购机附赠）', amount: 0, currency: 'USD', status: '已核销', createdAt: '2026-09-15', paidAt: '2026-09-15', channel: '兑换码' },
+    { id: 'ORD20260920001', type: '赠送', pl: 'bird', userId: 'U3001', email: 'maya.sato@mail.com', sn: '', item: '观鸟套餐2 30 天赠送', amount: 0, currency: 'USD', status: '已发放', createdAt: '2026-09-20', paidAt: '—', channel: '后台赠送' },
+    /* U3002 双机 */
+    { id: 'ORD20260805001', type: '兑换码核销', pl: 'bird', userId: 'U3002', email: 'noah.williams@mail.com', sn: '', item: 'AI调用包 300 次（购机附赠）', amount: 0, currency: 'USD', status: '已核销', createdAt: '2026-08-05', paidAt: '2026-08-05', channel: '兑换码' },
+    { id: 'ORD20260910001', type: '赠送', pl: 'hunt', userId: 'U3002', email: 'noah.williams@mail.com', sn: 'TL300-00G7N7', item: '狩猎套餐1 体验期（14 天）', amount: 0, currency: 'USD', status: '已发放', createdAt: '2026-09-10', paidAt: '—', channel: '后台赠送' },
+    /* 其余用户少量订单 */
+    { id: 'ORD20260905001', type: '订阅', pl: 'bird', userId: 'U1008', email: 'mia.johnson@mail.com', sn: '', item: '观鸟套餐2 月付', amount: 1.11, currency: 'USD', status: '已到账', createdAt: '2026-09-05', paidAt: '2026-09-05', channel: 'App Store' },
+    { id: 'ORD20260411001', type: '订阅', pl: 'bird', userId: 'U1009', email: 'charlotte.w@mail.com', sn: '', item: '观鸟套餐3 年付', amount: 22.22, currency: 'USD', status: '已到账', createdAt: '2026-04-11', paidAt: '2026-04-11', channel: 'App Store' },
+    { id: 'ORD20260830001', type: '订阅', pl: 'hunt', userId: 'U2006', email: 'ethan.clark@mail.com', sn: 'TL300-00H2R2', item: '狩猎套餐1 年付', amount: 22.22, currency: 'USD', status: '已到账', createdAt: '2026-08-30', paidAt: '2026-08-30', channel: 'App Store' },
+    { id: 'ORD20260918001', type: '赠送', pl: 'hunt', userId: 'U2008', email: 'william.hall@mail.com', sn: 'TL300-00J4V4', item: '狩猎套餐1 体验期（14 天）', amount: 0, currency: 'USD', status: '已发放', createdAt: '2026-09-18', paidAt: '—', channel: '后台赠送' },
+  ],
+
+  /* ---------- 用户分组（§5.3；状态机：未引用/已引用/已停用；被引用只列模块，不复制名单） ---------- */
+  audiencePacks: [
+    { id: 'P001', name: '狩猎体验期未转付费', pl: 'hunt', desc: '14 天新手体验期内、第 7 天以上且未转付费', tags: ['待触达'], conditions: '产品线=狩猎 AND 体验状态∈{体验中(第7+天), 已过期未付费}', est: 1240, status: '已引用', creator: 'Bobi', createdAt: '2026-09-28', refCount: 1, refs: [{ module: 'Push', name: 'S001 体验期转化提醒' }] },
+    { id: 'P002', name: '订阅即将到期 ≤7 天', pl: 'both', desc: '付费订阅剩余天数 ≤7 天（含自动续费已关闭）', tags: ['待触达'], conditions: '订阅剩余天数 ≤7 天', est: 8640, status: '已引用', creator: '运营A', createdAt: '2026-09-15', refCount: 1, refs: [{ module: 'Push', name: 'S002 续费到期提醒' }] },
+    { id: 'P003', name: '观鸟 7 天试用中用户', pl: 'bird', desc: '当前处于 7 天试用期且未取消自动续费', tags: ['购机附赠'], conditions: '产品线=观鸟 AND 试用状态=试用中(7天)', est: 532, status: '已引用', creator: '运营A', createdAt: '2026-09-20', refCount: 2, refs: [{ module: '权益下发', name: 'T004 K3 开卖：AI调用包赠礼' }, { module: '弹窗', name: 'S003 新用户欢迎弹窗' }] },
+    { id: 'P004', name: '30 日未活跃免费用户', pl: 'both', desc: '30 日未活跃且订阅为免费档', tags: [], conditions: '最近活跃=30日未活跃 AND 订阅状态=免费', est: 15230, status: '已停用', creator: 'Bobi', createdAt: '2026-09-10', refCount: 0, refs: [] },
+    { id: 'P005', name: '已购 K3 未订阅', pl: 'bird', desc: '已激活 K3 设备且从未付费订阅', tags: ['黑五活动'], conditions: '已购硬件型号=K3 AND 订阅状态=免费', est: 2210, status: '未引用', creator: 'Bobi', createdAt: '2026-10-05', refCount: 0, refs: [] },
+  ],
+
+  /* ---------- 分组标签体系（§5.3.8：打标对象是分组本身，不自动打给组内用户） ---------- */
+  groupTags: [
+    { name: '黑五活动', type: '活动', color: '#e6f4ff', usedBy: 1 },
+    { name: '购机附赠', type: '活动', color: '#fff1d6', usedBy: 1 },
+    { name: '客服补偿', type: '客服', color: '#ffe8e5', usedBy: 0 },
+    { name: '红人福利', type: '活动', color: '#e6f4ff', usedBy: 0 },
+    { name: '待触达', type: '触达', color: '#f0f0f0', usedBy: 2 },
+    { name: '已触达', type: '触达', color: '#f0f0f0', usedBy: 0 },
+    { name: '数据测试', type: '数据', color: '#f0f0f0', usedBy: 0 },
+  ],
+
+  /* ---------- 权益下发任务（状态机：草稿/待下发/下发中/已下发；count=生成数量） ---------- */
+  benefitTasks: [
+    { id: 'T001', name: '购机附赠：季卡兑换码批次', type: '兑换码', pl: 'hunt', ownership: '设备级', target: 'SN 导入（TL300 开卖批次）', benefit: '限定套餐A ×1000', status: '已下发', count: 1000, sent: 1000, success: 998, failed: 2, creator: 'Bobi', createdAt: '2026-09-20', expires: '2026-12-31' },
+    { id: 'T002', name: '客服补偿：观鸟套餐2 30 天', type: '优惠券', pl: 'bird', ownership: '账号级', target: 'P002（订阅即将到期 ≤7 天）', benefit: '观鸟套餐2 30 天赠送', status: '草稿', count: 500, sent: 0, success: 0, failed: 0, creator: '客服C', createdAt: '2026-10-07', expires: '2026-12-31' },
+    { id: 'T003', name: '红人福利：观鸟套餐3 90 天', type: '优惠券', pl: 'bird', ownership: '账号级', target: '手动名单（12 人）', benefit: '观鸟套餐3 90 天赠送', status: '下发中', count: 12, sent: 12, success: 9, failed: 3, creator: '运营A', createdAt: '2026-10-01', expires: '2026-11-30' },
+    { id: 'T004', name: 'K3 开卖：AI调用包赠礼', type: '兑换码', pl: 'bird', ownership: '账号级', target: 'P003（观鸟试用中）', benefit: 'AI调用包 300 次', status: '待下发', count: 300, sent: 0, success: 0, failed: 0, creator: 'Bobi', createdAt: '2026-10-08', expires: '2026-10-31' },
+  ],
+
+  /* ---------- 策略（状态机：草稿/待发布（定时）/已发布/已停用；渠道=弹窗/Push/Banner/站内信，无邮件） ---------- */
+  strategies: [
+    { id: 'S001', name: { en: 'Trial conversion nudge', zh: '体验期转化提醒' }, type: 'Push', pl: 'hunt', region: '全部', trigger: '定时（体验第 10 天 09:00 用户本地时区）', pack: 'P001', channels: 'Push', status: '已发布', creator: 'Bobi', createdAt: '2026-09-30', stats: { sent: 842, reach: 812, click: 196, conv: 58 } },
+    { id: 'S002', name: { en: 'Renewal reminder', zh: '续费到期提醒' }, type: 'Push', pl: 'bird', region: '全部', trigger: '事件（订阅到期前 3 天）', pack: 'P002', channels: 'Push + 站内信', status: '已发布', creator: '运营A', createdAt: '2026-09-25', stats: { sent: 2140, reach: 2095, click: 688, conv: 312 } },
+    { id: 'S003', name: { en: 'Welcome popup', zh: '新用户欢迎弹窗' }, type: '弹窗', pl: 'bird', region: '欧洲', trigger: '事件（App 启动，每日一次）', pack: 'P003', channels: '弹窗', status: '待发布', creator: '运营A', createdAt: '2026-10-06', stats: { sent: 0, reach: 0, click: 0, conv: 0 } },
+    { id: 'S004', name: { en: 'Black Friday teaser', zh: '黑五限定套餐预告' }, type: 'Banner', pl: 'hunt', region: '北美', trigger: '定时（2026-11-14 ~ 11-20）', pack: null, channels: 'Banner', status: '草稿', creator: 'Bobi', createdAt: '2026-10-08', stats: { sent: 0, reach: 0, click: 0, conv: 0 } },
+  ],
+
+  /* ---------- 渠道配置 ---------- */
+  channels: {
+    popup: { template: '居中弹窗', buttons: '主：立即订阅 / 次：稍后再说', frequency: '每日一次', priority: 2 },
+    push: { provider: 'APNs + Firebase', deepLink: 'demoapp://renew', badge: '开', receipt: '已启用' },
+    banner: { position: '探索 Tab 顶部', carousel: '第 1 位', schedule: '2026-11-14 ~ 11-27' },
+    inbox: { category: '营销通知', expiry: '30 天', readLogic: '已读即折叠' },
+    email: { provider: 'SendGrid', category: 'Transactional + Marketing', note: '【待确认】渠道清单（PRD §13 #1）' },
+  },
+
+  /* ---------- 全局频控（V2 预留） ---------- */
+  frequency: {
+    totalDaily: 3, totalWeekly: 12,
+    channelLimits: { popup: 1, push: 2, banner: 1, inbox: 3, email: 1 },
+    priority: ['续费提醒', '活动通知', '促销'],
+    exclusive: ['订阅中用户不弹促销弹窗', '当天已弹窗则不再 Push 同类内容'],
+    quietHours: '21:00 ~ 09:00（用户本地时区）',
+    today: { popup: 8420, push: 15320, banner: 4210, inbox: 6890, email: 3320 },
+  },
+};
